@@ -1,0 +1,117 @@
+var app = require('../app');
+var express = require('express');
+var router = express.Router();
+var db_pool = require('../bin/db_pool');
+var bcrypt = require('bcrypt');
+var aes_tool = require('../bin/aes_tool');
+var session = require('express-session');
+var FileStore = require('session-file-store')(session);
+
+router.get('/', function(req, res) {
+  if(req.session.uname) {
+    res.render('home');
+  }
+  else {
+    res.render('register');
+  }
+});
+
+router.post('/submit', function(req, res) {
+  if (req.body.username && req.body.email && req.body.password) {
+    var username = req.body.username;
+    var email = aes_tool.encrypt(req.body.email);
+    var password = bcrypt.hashSync(req.body.password, 10);
+    db_pool.connect(function(err, client, done) {
+      if(err) {
+        var result = {
+          "status": 500,
+          "error": 'error connecting to database'
+        };
+        console.log('error fetching client from pool: ', err);
+        res.send(result);
+      }
+      else {
+        client.query('INSERT INTO public.bwf_user (username, email, password) VALUES ($1, $2, $3)', [username,email,password], function(err, result) {
+          done();
+          if(err) {
+            console.log("Query Error", err);
+            var result = {
+              "status": 500,
+              "error": 'error creating user in database'
+            };
+            res.send(result);
+          }
+          else {
+            req.session.uname = username;
+            var result = {
+              "status": 201,
+              "message": 'user successfully created'
+            };
+            res.send(result);
+          }
+        });
+      }
+    });
+  }
+  else {
+    var result = {
+      "status": 400,
+      "message": 'Invalid User Details'
+    };
+    res.send(result);
+  }
+});
+
+router.post('/checkemail', function(req, res) {
+  if (req.body.email) {
+    var email = aes_tool.encrypt(req.body.email);
+    db_pool.connect(function(err, client, done) {
+      if(err) {
+        var result = {
+          "status": 500,
+          "error": 'error connecting to database'
+        };
+        console.log('error fetching client from pool: ', err);
+        res.send(result);
+      }
+      else {
+        client.query('SELECT COUNT(username) as count FROM public.bwf_user WHERE email=$1', [email], function(err, result) {
+          done();
+          if(err) {
+            console.log("Query Error", err);
+            var result = {
+              "status": 500,
+              "error": 'error creating user in database'
+            };
+            res.send(result);
+          }
+          else {
+            if (result.rows[0].count > 0) {
+              var result = {
+                "status": 200,
+                "validity": false
+              };
+              res.send(result);
+            }
+            else {
+              var result = {
+                "status": 200,
+                "validity": true
+              };
+              res.send(result);
+            }
+          }
+        });
+      }
+    });
+  }
+  else {
+    var result = {
+      "status": 400,
+      "validity": false
+    };
+    res.send(result);
+  }
+});
+
+module.exports = router;

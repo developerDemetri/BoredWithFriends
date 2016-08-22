@@ -35,3 +35,11 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+# Mac crap
+*.DS_Store
+
+#settings people don't need to see
+bin/ddl.sql
+bin/local_settings.js
+sessions/*
