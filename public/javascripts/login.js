@@ -47,6 +47,7 @@ function login() {
     $("#login-err").removeClass("hide");
     $('#loginLoadingCircle').addClass('hide');
     $('#login-button').removeClass('hide');
+    $('#login-button-mobile').removeClass('hide');
   }
 };
 
