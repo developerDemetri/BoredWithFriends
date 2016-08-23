@@ -1,16 +1,17 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var db_pool = require('./bin/db_pool');
-var session = require('express-session');
-var FileStore = require('session-file-store')(session);
-var session_settings = require('./bin/secret_settings').session_settings;
+'use strict';
+let express = require('express');
+let path = require('path');
+let cookieParser = require('cookie-parser');
+let bodyParser = require('body-parser');
+let db_pool = require('./bin/db_pool');
+let session = require('express-session');
+let FileStore = require('session-file-store')(session);
+let session_settings = require('./bin/secret_settings').session_settings;
 
-var index = require('./routes/index');
-var register = require('./routes/register');
+let index = require('./routes/index');
+let register = require('./routes/register');
 
-var app = express();
+let app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

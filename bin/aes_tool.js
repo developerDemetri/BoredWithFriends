@@ -1,21 +1,22 @@
-var aes_config = require('./secret_settings').aes_config;
+'use strict';
+let aes_config = require('./secret_settings').aes_config;
 
-var crypto = require('crypto'),
+let crypto = require('crypto'),
     algorithm = aes_config.algorithm,
     password = aes_config.password;
 
-var aes_tool = {};
+let aes_tool = {};
 
 aes_tool.encrypt = function(text) {
-  var cipher = crypto.createCipher(algorithm,password)
-  var crypted = cipher.update(text,'utf8','hex')
+  let cipher = crypto.createCipher(algorithm,password)
+  let crypted = cipher.update(text,'utf8','hex')
   crypted += cipher.final('hex');
   return crypted;
 }
 
 aes_tool.decrypt = function(text) {
-  var decipher = crypto.createDecipher(algorithm,password)
-  var dec = decipher.update(text,'hex','utf8')
+  let decipher = crypto.createDecipher(algorithm,password)
+  let dec = decipher.update(text,'hex','utf8')
   dec += decipher.final('utf8');
   return dec;
 }

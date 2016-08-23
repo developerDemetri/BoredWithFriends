@@ -1,25 +1,26 @@
-var uuid = require('node-uuid');
-var session = require('express-session');
-var FileStore = require('session-file-store')(session);
+'use strict';
+let uuid = require('node-uuid');
+let session = require('express-session');
+let FileStore = require('session-file-store')(session);
 
-var isLocal = true;
+let isLocal = true;
 
-var pg_user;
-var pg_db;
-var pg_pass;
-var pg_host;
-var pg_port;
-var pg_ssl;
+let pg_user;
+let pg_db;
+let pg_pass;
+let pg_host;
+let pg_port;
+let pg_ssl;
 
-var aes_alg;
-var aes_pass;
+let aes_alg;
+let aes_pass;
 
-var sesh_name;
-var sesh_secret;
+let sesh_name;
+let sesh_secret;
 
 
 if (isLocal) {
-  var local_settings = require('./local_settings');
+  let local_settings = require('./local_settings');
   pg_user = local_settings.pg_user;
   pg_db = local_settings.pg_db;
   pg_pass = local_settings.pg_pass;
@@ -44,7 +45,7 @@ else {
   pg_ssl = true;
 }
 
-var db_config = {
+let db_config = {
   user: pg_user,
   database: pg_db,
   password: pg_pass,
@@ -54,17 +55,17 @@ var db_config = {
   idleTimeoutMillis: 30000,
 };
 
-var aes_config = {
+let aes_config = {
   algorithm: aes_alg,
   password: aes_pass
 };
 
-var storeOptions = {
+let storeOptions = {
   encrypt: 'true',
   ttl: 900
 };
 
-var session_settings = {
+let session_settings = {
   name: sesh_name,
   store: new FileStore(storeOptions),
   genid: function(req) {
@@ -76,7 +77,7 @@ var session_settings = {
   resave: 'true'
 };
 
-var secret_settings = {
+let secret_settings = {
   db_config: db_config,
   aes_config: aes_config,
   session_settings: session_settings,

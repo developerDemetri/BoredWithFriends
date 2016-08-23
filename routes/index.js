@@ -1,12 +1,13 @@
-var app = require('../app');
-var express = require('express');
-var db_pool = require('../bin/db_pool');
-var aes_tool = require('../bin/aes_tool');
-var bcrypt = require('bcrypt');
-var session = require('express-session');
-var FileStore = require('session-file-store')(session);
+'use strict';
+let app = require('../app');
+let express = require('express');
+let db_pool = require('../bin/db_pool');
+let aes_tool = require('../bin/aes_tool');
+let bcrypt = require('bcrypt');
+let session = require('express-session');
+let FileStore = require('session-file-store')(session);
 
-var router = express.Router();
+let router = express.Router();
 
 router.get('/', function(req, res) {
   if(req.session.uname) {
@@ -21,7 +22,7 @@ router.post('/auth', function(req, res) {
   if (req.body.username && req.body.password) {
     db_pool.connect(function(err, client, done) {
       if(err) {
-        var result = {
+        let result = {
           "status": 500,
           "error": 'error connecting to database'
         };
@@ -33,7 +34,7 @@ router.post('/auth', function(req, res) {
           done();
           if(err) {
             console.log("Query Error", err);
-            var result = {
+            let result = {
               "status": 500,
               "error": 'error querying database'
             };
@@ -42,14 +43,14 @@ router.post('/auth', function(req, res) {
           else {
             if(result.rows[0] && bcrypt.compareSync(req.body.password, result.rows[0].password)) {
               req.session.uname = req.body.username;
-              var result = {
+              let result = {
                 "status": 200,
                 "message": 'successful login'
               };
               res.send(result);
             }
             else {
-              var result = {
+              let result = {
                 "status": 400,
                 "message": 'bad login'
               };
@@ -61,7 +62,7 @@ router.post('/auth', function(req, res) {
     });
   }
   else {
-    var result = {
+    let result = {
       "status": 400,
       "message": 'bad login'
     };
@@ -72,14 +73,14 @@ router.post('/auth', function(req, res) {
 router.post('/logout', function(req, res) {
   if(req.session.uname) {
     req.session.destroy();
-    var result = {
+    let result = {
       "status": 200,
       "message": 'successful logout'
     };
     res.send(result);
   }
   else {
-    var result = {
+    let result = {
       "status": 400,
       "message": 'no session to log out of...'
     };

@@ -1,3 +1,4 @@
+'use strict';
 function register() {
   $('#registerBtn').addClass('hide');
   $('#registerLoadingCircle').removeClass('hide');

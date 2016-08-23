@@ -1,11 +1,12 @@
-var app = require('../app');
-var express = require('express');
-var router = express.Router();
-var db_pool = require('../bin/db_pool');
-var bcrypt = require('bcrypt');
-var aes_tool = require('../bin/aes_tool');
-var session = require('express-session');
-var FileStore = require('session-file-store')(session);
+'use strict';
+let app = require('../app');
+let express = require('express');
+let router = express.Router();
+let db_pool = require('../bin/db_pool');
+let bcrypt = require('bcrypt');
+let aes_tool = require('../bin/aes_tool');
+let session = require('express-session');
+let FileStore = require('session-file-store')(session);
 
 router.get('/', function(req, res) {
   if(req.session.uname) {
@@ -18,12 +19,12 @@ router.get('/', function(req, res) {
 
 router.post('/submit', function(req, res) {
   if (req.body.username && req.body.email && req.body.password) {
-    var username = req.body.username;
-    var email = aes_tool.encrypt(req.body.email);
-    var password = bcrypt.hashSync(req.body.password, 10);
+    let username = req.body.username;
+    let email = aes_tool.encrypt(req.body.email);
+    let password = bcrypt.hashSync(req.body.password, 10);
     db_pool.connect(function(err, client, done) {
       if(err) {
-        var result = {
+        let result = {
           "status": 500,
           "error": 'error connecting to database'
         };
@@ -35,7 +36,7 @@ router.post('/submit', function(req, res) {
           done();
           if(err) {
             console.log("Query Error", err);
-            var result = {
+            let result = {
               "status": 500,
               "error": 'error creating user in database'
             };
@@ -43,7 +44,7 @@ router.post('/submit', function(req, res) {
           }
           else {
             req.session.uname = username;
-            var result = {
+            let result = {
               "status": 201,
               "message": 'user successfully created'
             };
@@ -54,7 +55,7 @@ router.post('/submit', function(req, res) {
     });
   }
   else {
-    var result = {
+    let result = {
       "status": 400,
       "message": 'Invalid User Details'
     };
@@ -64,10 +65,10 @@ router.post('/submit', function(req, res) {
 
 router.post('/checkemail', function(req, res) {
   if (req.body.email) {
-    var email = aes_tool.encrypt(req.body.email);
+    let email = aes_tool.encrypt(req.body.email);
     db_pool.connect(function(err, client, done) {
       if(err) {
-        var result = {
+        let result = {
           "status": 500,
           "error": 'error connecting to database'
         };
@@ -79,7 +80,7 @@ router.post('/checkemail', function(req, res) {
           done();
           if(err) {
             console.log("Query Error", err);
-            var result = {
+            let result = {
               "status": 500,
               "error": 'error creating user in database'
             };
@@ -87,14 +88,14 @@ router.post('/checkemail', function(req, res) {
           }
           else {
             if (result.rows[0].count > 0) {
-              var result = {
+              let result = {
                 "status": 200,
                 "validity": false
               };
               res.send(result);
             }
             else {
-              var result = {
+              let result = {
                 "status": 200,
                 "validity": true
               };
@@ -106,7 +107,7 @@ router.post('/checkemail', function(req, res) {
     });
   }
   else {
-    var result = {
+    let result = {
       "status": 400,
       "validity": false
     };
