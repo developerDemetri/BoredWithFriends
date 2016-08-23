@@ -35,7 +35,6 @@ function register() {
                     if (data2.validity) {
                       $("#badEmail").addClass("hide");
                       if (checkPass(password1,password2)) {
-                        console.log('inserting user')
                         insertUser(username,email,password1);
                       }
                       else {
