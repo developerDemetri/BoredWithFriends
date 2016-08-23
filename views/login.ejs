@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <%- include('header'); %>
+    <title>BWF | Log In</title>
+    <script type="text/javascript" src="javascripts/login.js"></script>
+  </head>
+  <body class="container" onload="setup();">
+    <h1 class="center-align blue-text text-darken-4">Bored With Friends</h1>
+    <div class="pushed-down-alittle">
+      <h6 id="login-err" class="center-align red-text hide">Invalid Username/Password <i class="fa fa-exclamation-circle" aria-hidden="true"></i></h6>
+      <form >
+        <div class="row">
+          <div class="input-field col s10 m6 offset-m3 offset-s1">
+            <input id="username" type="text" class="validate customInput" required>
+            <label for="username">Username</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s10 m6 offset-m3 offset-s1">
+            <input id="pass" type="password" class="validate customInput" required>
+            <label for="pass">Password</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s3 m2 offset-s8 offset-m7">
+            <a id="login-button" onclick="login();" class="waves-effect waves-light btn blue darken-4 hide-on-small-only">Log In</a>
+            <a id="login-button-mobile" onclick="login();" class="waves-effect waves-light btn blue darken-4 hide-on-med-and-up"><i class="fa fa-sign-in" aria-hidden="true"></i></a>
+            <div id="loginLoadingCircle" class="hide preloader-wrapper big active">
+              <div class="spinner-layer spinner-blue-only">
+                <div class="circle-clipper left">
+                  <div class="circle"></div>
+                </div><div class="gap-patch">
+                  <div class="circle"></div>
+                </div><div class="circle-clipper right">
+                  <div class="circle"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+      <div class="row center-align">
+        <h5 class="pushed-down-alittle">New User? <a href="/register">Sign up here</a> <i class="fa fa-smile-o" aria-hidden="true"></i></h5>
+      </div>
+    </div>
+  </body>
+</html>
+
+<!--
+Copyright 2016 DeveloperDemetri
+developerdemetri.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->

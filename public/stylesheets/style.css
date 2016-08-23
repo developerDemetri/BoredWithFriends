@@ -1,0 +1,31 @@
+body {
+  background-color: #fcfcfc;
+  color: #263238;
+}
+
+textarea:focus {
+  border-bottom: 1px solid #1976d2;
+  -webkit-box-shadow: 0 1px 0 0 #1976d2;
+  -moz-box-shadow: 0 1px 0 0 #1976d2;
+  box-shadow: 0 1px 0 0 #1976d2;
+}
+
+.pushed-down-alot {
+  margin-top: 6rem;
+}
+
+.pushed-down-alittle {
+  margin-top: 3rem;
+}
+
+a {
+  color: #0277bd;
+}
+
+.warning-toast {
+  background-color: #ffb74d;
+}
+
+#nav-logo {
+  margin-left: 1rem;
+}
