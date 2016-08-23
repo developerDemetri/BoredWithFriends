@@ -10,46 +10,63 @@ function register() {
     var re = /^(\w{3,63})$/;
     if (re.test(username)) {
       $("#badUsername").addClass("hide");
-      //check for duplicate username//
-      re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      if (re.test(email)) {
-        var url = getServer()+'/register/checkemail';
-        var emlObj = {
-          "email": email
-        };
-        $.ajax({
-          type: "POST",
-          url: url,
-          data: emlObj,
-          success: function(data) {
-            if(data.status == 200) {
-              if (data.validity) {
-                $("#badEmail").addClass("hide");
-                if (checkPass(password1,password2)) {
-                  console.log('inserting user')
-                  insertUser(username,email,password1);
+      var url = getServer()+'/register/checkusername';
+      var unameObj = {
+        "username": username
+      };
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: unameObj,
+        success: function(data1) {
+          if (data1.status === 200 && data1.validity) {
+            re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            if (re.test(email)) {
+              url = getServer()+'/register/checkemail';
+              var emlObj = {
+                "email": email
+              };
+              $.ajax({
+                type: "POST",
+                url: url,
+                data: emlObj,
+                success: function(data2) {
+                  if(data2.status === 200) {
+                    if (data2.validity) {
+                      $("#badEmail").addClass("hide");
+                      if (checkPass(password1,password2)) {
+                        console.log('inserting user')
+                        insertUser(username,email,password1);
+                      }
+                      else {
+                        stopLoading();
+                      }
+                    }
+                    else {
+                      $("#badEmail").removeClass("hide");
+                      stopLoading();
+                    }
+                  }
+                  else {
+                    $("#badEmail").removeClass("hide");
+                    stopLoading();
+                  }
                 }
-                else {
-                  stopLoading();
-                }
-              }
-              else {
-                $("#badEmail").removeClass("hide");
-                stopLoading();
-              }
+              });
             }
             else {
               $("#badEmail").removeClass("hide");
+              Materialize.toast('Please enter a valid email address!', 5000, 'warning-toast');
               stopLoading();
             }
           }
-        });
-      }
-      else {
-        $("#badEmail").removeClass("hide");
-        Materialize.toast('Please enter a valid email address!', 5000, 'warning-toast');
-        stopLoading();
-      }
+          else {
+            $("#badUsername").removeClass("hide");
+            Materialize.toast('Username Already In Use!', 5000, 'warning-toast');
+            stopLoading();
+          }
+        }
+      });
     }
     else {
       $("#badUsername").removeClass("hide");
