@@ -10,6 +10,7 @@ function setup() {
 function login() {
   $('#loginLoadingCircle').removeClass('hide');
   $('#login-button').addClass('hide');
+  $('#login-button-mobile').addClass('hide');
   var username = $('#username').val();
   var password = $('#pass').val();
   if (username && password) {
@@ -30,11 +31,13 @@ function login() {
         else if (data.status == 400) {
           $('#loginLoadingCircle').addClass('hide');
           $('#login-button').removeClass('hide');
+          $('#login-button-mobile').removeClass('hide');
           $("#login-err").removeClass("hide");
         }
         else {
           $('#loginLoadingCircle').addClass('hide');
           $('#login-button').removeClass('hide');
+          $('#login-button-mobile').removeClass('hide');
           //something went wrong with the server
         }
       }
