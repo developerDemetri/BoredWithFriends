@@ -18,6 +18,8 @@ let aes_pass;
 let sesh_name;
 let sesh_secret;
 
+let google_key;
+
 
 if (isLocal) {
   let local_settings = require('./local_settings');
@@ -31,6 +33,7 @@ if (isLocal) {
   sesh_name = local_settings.sesh_name;
   sesh_secret = local_settings.sesh_secret;
   pg_ssl = false;
+  google_key = local_settings.google_key;
 }
 else {
   pg_user = process.env.pg_user;
@@ -43,6 +46,7 @@ else {
   sesh_name = process.env.sesh_name;
   sesh_secret = process.env.sesh_secret;
   pg_ssl = true;
+  google_key = process.env.google_key;
 }
 
 let db_config = {
@@ -50,7 +54,7 @@ let db_config = {
   database: pg_db,
   password: pg_pass,
   host: pg_host,
-  port: 5432,
+  port: pg_port,
   max: 12,
   idleTimeoutMillis: 30000,
 };
@@ -77,11 +81,16 @@ let session_settings = {
   resave: 'true'
 };
 
+let api_settings = {
+  google_key: google_key
+}
+
 let secret_settings = {
   db_config: db_config,
   aes_config: aes_config,
   session_settings: session_settings,
-  pg_ssl: pg_ssl
+  pg_ssl: pg_ssl,
+  api_settings: api_settings
 };
 
 module.exports = secret_settings;
