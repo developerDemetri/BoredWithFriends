@@ -8,14 +8,22 @@
     <script type="text/javascript" src="javascripts/bootstrap-material-datetimepicker.js"></script>
     <script type="text/javascript" src="javascripts/home.js"></script>
   </head>
-  <body onload="setup();">
-    <%- include('navbar'); %>
-    <div class="container">
-      <div class="row pushed-down-alot">
-        <a id="foodBtn" onclick="loadFood();" class="hide waves-effect waves-light btn blue darken-4">Food <i class="fa fa-cutlery" aria-hidden="true"></i></a>
+  <%- include('navbar'); %>
+  <main>
+    <body onload="setup();">
+      <div class="container">
+        <div class="row pushed-down-alot">
+          <div id="geoLoader" class="progress">
+              <div class="indeterminate"></div>
+          </div>
+          <h1 id="geoError" class="red-text center-align hide">Sorry, Location is not enabled <i class="fa fa-frown-o" aria-hidden="true"></i></h1>
+
+          <a id="foodBtn" onclick="loadFood();" class="hide explore-options waves-effect waves-light btn blue darken-4">Food <i class="fa fa-cutlery" aria-hidden="true"></i></a>
+        </div>
       </div>
-    </div>
-  </body>
+    </body>
+  </main>
+  <%- include('footer'); %>
 </html>
 
 <!--

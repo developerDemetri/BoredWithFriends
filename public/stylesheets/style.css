@@ -1,6 +1,13 @@
 body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
   background-color: #fcfcfc;
   color: #263238;
+}
+
+main {
+  flex: 1 0 auto;
 }
 
 textarea:focus {
@@ -28,4 +35,17 @@ a {
 
 #nav-logo {
   margin-left: 1rem;
+}
+
+.no-margin {
+  margin: 0rem;
+}
+
+.tiny-text {
+  font-size: .75rem;
+}
+
+footer.page-footer {
+  padding-top: .5rem;
+  padding-bottom: .25rem;
 }

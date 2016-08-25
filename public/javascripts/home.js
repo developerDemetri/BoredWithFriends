@@ -14,16 +14,14 @@ function setLocation() {
     navigator.geolocation.getCurrentPosition(function(position) {
       loc.lat = position.coords.latitude;
       loc.long = position.coords.longitude;
-      show_geo_related_buttons();
+      $('#geoLoader').addClass("hide");
+      $('#geoError').addClass("hide");
     });
   }
   else {
     console.log('no geolocation ):');
+    $('#geoError').removeClass("hide");
   }
-}
-
-function show_geo_related_buttons() {
-  $('#foodBtn').removeClass('hide');
 }
 
 function loadFood() {
