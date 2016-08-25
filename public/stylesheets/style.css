@@ -49,3 +49,22 @@ footer.page-footer {
   padding-top: .5rem;
   padding-bottom: .25rem;
 }
+
+.option-card-logo {
+  margin: 0rem;
+  font-size: 7rem;
+}
+
+.clickable {
+  cursor: pointer
+}
+
+@media only screen and (max-width: 768px) {
+  .option-card-logo {
+    margin: 0rem;
+    font-size: 3rem;
+  }
+  span.card-title.center-align {
+    font-size: 1.5rem;
+  }
+}
