@@ -51,6 +51,7 @@ function findFood() {
       card += '</div>';
       $('#food-places').append(card);
     }
+    $('.google-attribution').removeClass('hide');
   });
 }
 
@@ -71,6 +72,7 @@ function orderFood() {
       card += '</div>';
       $('#order-places').append(card);
     }
+    $('.google-attribution').removeClass('hide');
   });
 }
 
