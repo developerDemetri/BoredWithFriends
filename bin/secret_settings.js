@@ -3,7 +3,7 @@ let uuid = require('node-uuid');
 let session = require('express-session');
 let FileStore = require('session-file-store')(session);
 
-let isLocal = true;
+let isLocal = false;
 
 let pg_user;
 let pg_db;
