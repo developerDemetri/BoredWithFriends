@@ -9,15 +9,28 @@ let session = require('express-session');
 let FileStore = require('session-file-store')(session);
 let api_settings = require('../bin/secret_settings').api_settings;
 let request = require('request');
-
-router.get('/food/:lat/:long', function(req, res) {
-  if(req.session.uname && req.params.lat && req.params.long) {
+///suggestions/food/find/
+router.get('/food/:plan/:lat/:long', function(req, res) {
+  if(req.session.uname && req.params.plan && req.params.lat && req.params.long) {
     let req_path = 'https://maps.googleapis.com';
     req_path += '/maps/api/place/nearbysearch/json?';
     req_path += 'key='+api_settings.google_key;
     req_path += '&location='+req.params.lat+','+req.params.long;
-    req_path += '&radius=5000';
-    req_path += '&type=restaurant';
+    if (req.params.plan == 'find') {
+      req_path += '&radius=5000';
+      req_path += '&type=restaurant';
+    }
+    else if (req.params.plan == 'order') {
+      req_path += '&radius=15000';
+      req_path += '&type=meal_delivery';
+    }
+    else {
+      let result = {
+        "status": 400,
+        "message": 'Um...awkward....'
+      };
+      res.send(result);
+    }
     req_path += '&opennow';
     request(req_path, function (error, response, body) {
       if (!error) {
@@ -33,7 +46,7 @@ router.get('/food/:lat/:long', function(req, res) {
         }
         let result = {
           "status": 200,
-          "message": places
+          "places": places
         }
         res.send(result);
       }
