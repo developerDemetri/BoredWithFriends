@@ -109,7 +109,6 @@ function insertUser(username,email,password) {
 }
 
 function loadModal() {
-  console.log('opening modal');
   $('#terms-modal').openModal();
 }
 
