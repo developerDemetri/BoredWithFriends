@@ -67,10 +67,6 @@ footer.page-footer {
   span.card-title.center-align {
     font-size: 1.5rem;
   }
-  a {
-    pointer-events:none;
-    cursor: pointer;
-  }
 }
 
 .food-card {

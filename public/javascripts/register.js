@@ -108,6 +108,20 @@ function insertUser(username,email,password) {
   });
 }
 
+function loadModal() {
+  console.log('opening modal');
+  $('#terms-modal').openModal();
+}
+
+function rejectTerms() {
+  $('#terms-modal').closeModal();
+}
+
+function acceptTerms() {
+  $('#terms-modal').closeModal();
+  register();
+}
+
 function checkPass(pass1, pass2) {
   if (pass1 == pass2) {
     $("#badPassMatch").addClass("hide");

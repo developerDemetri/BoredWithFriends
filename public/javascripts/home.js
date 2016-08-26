@@ -124,6 +124,14 @@ function starify(rating) {
   return stars;
 }
 
+function loadTerms() {
+  $('#terms-privacy-modal').openModal();
+}
+
+function closeTerms() {
+  $('#terms-privacy-modal').closeModal();
+}
+
 function logout() {
   var url = getServer()+'/logout';
   $.ajax({
