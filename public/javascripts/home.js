@@ -88,6 +88,22 @@ function displayExploreOptions() {
   $('#explore-options').removeClass("hide");
 }
 
+function backToHome() {
+  $('#explore-options').addClass("hide");
+  $('#home-options').addClass("hide");
+  $('#explore-vs-home').removeClass("hide");
+}
+
+function backToExploreOptions() {
+  $('#find-food').addClass("hide");
+  $('#explore-options').removeClass("hide");
+}
+
+function backToHomeOptions() {
+  $('#order-food').addClass("hide");
+  $('#home-options').removeClass("hide");
+}
+
 function starify(rating) {
   var stars = '';
   if(isNaN(rating)) {
