@@ -3,7 +3,6 @@ let uuid = require('node-uuid');
 let session = require('express-session');
 let FileStore = require('session-file-store')(session);
 
-let isLocal = false;
 
 let pg_user;
 let pg_db;
@@ -21,7 +20,21 @@ let sesh_secret;
 let google_key;
 
 
-if (isLocal) {
+if (process.env.im_live) {
+  pg_user = process.env.pg_user;
+  pg_db = process.env.pg_db;
+  pg_pass = process.env.pg_pass;
+  pg_host = process.env.pg_host;
+  pg_port = process.env.pg_port;
+  aes_alg = process.env.aes_alg;
+  aes_pass = process.env.aes_pass;
+  sesh_name = process.env.sesh_name;
+  sesh_secret = process.env.sesh_secret;
+  pg_ssl = process.env.pg_ssl;
+  google_key = process.env.google_key;
+}
+else {
+  console.log('loading local settings..');
   let local_settings = require('./local_settings');
   pg_user = local_settings.pg_user;
   pg_db = local_settings.pg_db;
@@ -32,21 +45,8 @@ if (isLocal) {
   aes_pass = local_settings.aes_pass;
   sesh_name = local_settings.sesh_name;
   sesh_secret = local_settings.sesh_secret;
-  pg_ssl = false;
+  pg_ssl = local_settings.pg_ssl;
   google_key = local_settings.google_key;
-}
-else {
-  pg_user = process.env.pg_user;
-  pg_db = process.env.pg_db;
-  pg_pass = process.env.pg_pass;
-  pg_host = process.env.pg_host;
-  pg_port = process.env.pg_port;
-  aes_alg = process.env.aes_alg;
-  aes_pass = process.env.aes_pass;
-  sesh_name = process.env.sesh_name;
-  sesh_secret = process.env.sesh_secret;
-  pg_ssl = true;
-  google_key = process.env.google_key;
 }
 
 let db_config = {

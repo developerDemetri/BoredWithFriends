@@ -26,8 +26,8 @@ function setLocation() {
 }
 
 function shortenName(name) {
-  if (name.length > 17) {
-    return (name.substring(0, 17)+'...');
+  if (name.length > 37) {
+    return (name.substring(0, 37)+'...');
   }
   else {
     return name;
@@ -44,7 +44,7 @@ function findFood() {
       card += '<div class="col s6 m4">';
       card += ' <div class="card teal lighten-4 food-card">';
       card += '   <div class="card-content blue-grey-text text-darken-4">';
-      card += '     <span class="card-title grey-text text-darken-4">'+shortenName(data.places[i].name)+'</span>';
+      card += '     <span class="grey-text text-darken-4 smaller-card-font">'+shortenName(data.places[i].name)+'</span>';
       card += '     <p>'+starify(data.places[i].rating)+'</p>';
       card += '   </div>';
       card += '  </div>';
@@ -65,7 +65,7 @@ function orderFood() {
       card += '<div class="col s6 m4">';
       card += ' <div class="card food-card blue lighten-4">';
       card += '   <div class="card-content blue-grey-text text-darken-4">';
-      card += '     <span class="card-title grey-text text-darken-4">'+shortenName(data.places[i].name)+'</span>';
+      card += '     <span class="grey-text text-darken-4 smaller-card-font">'+shortenName(data.places[i].name)+'</span>';
       card += '     <p>'+starify(data.places[i].rating)+'</p>';
       card += '   </div>';
       card += '  </div>';
