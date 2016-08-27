@@ -96,6 +96,7 @@ function backToHome() {
 
 function backToExploreOptions() {
   $('#find-food').addClass("hide");
+  $('#go-shopping').addClass("hide");
   $('#explore-options').removeClass("hide");
 }
 
@@ -130,6 +131,28 @@ function loadTerms() {
 
 function closeTerms() {
   $('#terms-privacy-modal').closeModal();
+}
+
+function goShopping() {
+  $('#explore-options').addClass("hide");
+  $('#go-shopping').removeClass("hide");
+  var go_shopping_url = getServer()+'/suggestions/shopping/'+loc.lat+'/'+loc.long;
+  console.log(go_shopping_url)
+  $.get(go_shopping_url).done(function(data) {
+    for (var i = 0; i < data.places.length; i++) {
+      var card = '';
+      card += '<div class="col s6 m4">';
+      card += ' <div class="card food-card blue lighten-4">';
+      card += '   <div class="card-content blue-grey-text text-darken-4">';
+      card += '     <span class="grey-text text-darken-4 smaller-card-font">'+shortenName(data.places[i].name)+'</span>';
+      card += '     <p>'+starify(data.places[i].rating)+'</p>';
+      card += '   </div>';
+      card += '  </div>';
+      card += '</div>';
+      $('#shopping-places').append(card);
+    }
+    $('.google-attribution').removeClass('hide');
+  });
 }
 
 function logout() {

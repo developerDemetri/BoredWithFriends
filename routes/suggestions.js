@@ -69,7 +69,7 @@ router.get('/food/:plan/:lat/:long', function(req, res) {
 });
 
 router.get('/shopping/:lat/:long', function(req, res) {
-  if(req.session.uname && req.params.plan && req.params.lat && req.params.long) {
+  if(req.session.uname && req.params.lat && req.params.long) {
     let req_path = 'https://maps.googleapis.com';
     req_path += '/maps/api/place/nearbysearch/json?';
     req_path += 'key='+api_settings.google_key;
