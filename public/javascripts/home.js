@@ -97,11 +97,13 @@ function backToHome() {
 function backToExploreOptions() {
   $('#find-food').addClass("hide");
   $('#go-shopping').addClass("hide");
+  $('#see-movie').addClass("hide");
   $('#explore-options').removeClass("hide");
 }
 
 function backToHomeOptions() {
   $('#order-food').addClass("hide");
+  $('#watch-tv').addClass("hide");
   $('#home-options').removeClass("hide");
 }
 
@@ -153,6 +155,17 @@ function goShopping() {
     }
     $('.google-attribution').removeClass('hide');
   });
+}
+
+function watchTV() {
+  $('#home-options').addClass("hide");
+  $('#watch-tv').removeClass("hide");
+  //load data//
+}
+
+function seeMovie() {
+  $('#explore-options').addClass("hide");
+  $('#see-movie').removeClass("hide");
 }
 
 function logout() {
