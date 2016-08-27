@@ -10,6 +10,7 @@ let session_settings = require('./bin/secret_settings').session_settings;
 
 let index = require('./routes/index');
 let register = require('./routes/register');
+let suggestions = require('./routes/suggestions');
 
 let app = express();
 
@@ -24,7 +25,8 @@ app.use(express.static('./public/javascripts'));
 app.use(session(session_settings));
 
 app.use('/', index);
-app.use('/register', register)
+app.use('/register', register);
+app.use('/suggestions', suggestions);
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');

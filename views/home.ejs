@@ -8,12 +8,42 @@
     <script type="text/javascript" src="javascripts/bootstrap-material-datetimepicker.js"></script>
     <script type="text/javascript" src="javascripts/home.js"></script>
   </head>
-  <body onload="setup();">
-    <%- include('navbar'); %>
-    <div class="container">
-      <h1 class="center-align"><i class="fa fa-smile-o" aria-hidden="true"></i> HELLO WORLD <i class="fa fa-smile-o" aria-hidden="true"></i></h1>
-    </div>
-  </body>
+  <%- include('navbar'); %>
+  <main>
+    <body onload="setup();">
+      <div class="container">
+        <div class="row pushed-down-alot">
+          <div id="geoLoader" class="progress">
+              <div class="indeterminate"></div>
+          </div>
+          <h1 id="geoError" class="red-text center-align hide">Sorry, Location is not enabled <i class="fa fa-frown-o" aria-hidden="true"></i></h1>
+          <div id="explore-vs-home" class="row hide">
+            <h2 class="center-align blue-grey-text text-darken-4 hide-on-small-only">What are you in the mood for?</h2>
+            <div class="col s6 m6">
+              <div class="card blue lighten-4 clickable" onclick="displayHomeOptions();">
+                <div class="card-content blue-grey-text text-darken-4 center-align">
+                  <span class="card-title center-align">Stay Home</span>
+                  <h1 class="center-align option-card-logo"><i class="fa fa-home" aria-hidden="true"></i></h1>
+                </div>
+              </div>
+            </div>
+            <div class="col s6 m6">
+              <div class="card teal lighten-4 center-align clickable" onclick="displayExploreOptions();">
+                <div class="card-content blue-grey-text text-darken-4">
+                  <span class="card-title center-align">Go Explore</span>
+                  <h1 class="center-align option-card-logo"><i class="fa fa-compass" aria-hidden="true"></i></h1>
+                </div>
+              </div>
+            </div>
+          </div>
+          <%- include('home-options'); %>
+          <%- include('explore-options'); %>
+        </div>
+      </div>
+      <%- include('terms-privacy-modal'); %>
+    </body>
+  </main>
+  <%- include('footer'); %>
 </html>
 
 <!--

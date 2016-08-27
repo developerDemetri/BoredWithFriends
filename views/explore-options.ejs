@@ -1,0 +1,32 @@
+<div id="explore-options" class="hide">
+  <div class="col s12 m12">
+    <button class="btn waves-effect waves-light" onclick="backToHome();"><i class="fa fa-long-arrow-left" aria-hidden="true"></i></button>
+  </div>
+  <div class="col s6 m4 pushed-down-alittle">
+    <div class="card teal lighten-4 center-align clickable" onclick="findFood();">
+      <div class="card-content blue-grey-text text-darken-4">
+        <span class="card-title center-align">Find Food</span>
+        <h1 class="center-align option-card-logo"><i class="fa fa-cutlery" aria-hidden="true"></i></h1>
+      </div>
+    </div>
+  </div>
+  <div class="col s6 m4 pushed-down-alittle">
+    <div class="card teal lighten-4 center-align clickable" onclick="goShopping();">
+      <div class="card-content blue-grey-text text-darken-4">
+        <span class="card-title center-align">Shopping</span>
+        <h1 class="center-align option-card-logo"><i class="fa fa-shopping-bag" aria-hidden="true"></i></h1>
+      </div>
+    </div>
+  </div>
+  <div class="col s6 m4 pushed-down-alittle">
+    <div class="card teal lighten-4 center-align clickable" onclick="seeMovie();">
+      <div class="card-content blue-grey-text text-darken-4">
+        <span class="card-title center-align">See Movie</span>
+        <h1 class="center-align option-card-logo"><i class="fa fa-film" aria-hidden="true"></i></h1>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('find-food'); %>
+<%- include('go-shopping'); %>
+<%- include('see-movie'); %>
