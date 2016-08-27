@@ -68,6 +68,51 @@ router.get('/food/:plan/:lat/:long', function(req, res) {
   }
 });
 
+router.get('/shopping/:lat/:long', function(req, res) {
+  if(req.session.uname && req.params.plan && req.params.lat && req.params.long) {
+    let req_path = 'https://maps.googleapis.com';
+    req_path += '/maps/api/place/nearbysearch/json?';
+    req_path += 'key='+api_settings.google_key;
+    req_path += '&location='+req.params.lat+','+req.params.long;
+    req_path += '&radius=15000';
+    req_path += '&type=clothing_store';
+    req_path += '&opennow';
+    request(req_path, function (error, response, body) {
+      if (!error) {
+        let places = [];
+        let data = JSON.parse(body);
+        for (let i = 0; i < data.results.length; i++) {
+          let place = {
+            id: data.results[i].place_id,
+            name: data.results[i].name,
+            rating: data.results[i].rating
+          };
+          places.push(place);
+        }
+        let result = {
+          "status": 200,
+          "places": places
+        }
+        res.send(result);
+      }
+      else {
+        let result = {
+          "status": 500,
+          "message": error
+        }
+        res.send(result);
+      }
+    });
+  }
+  else {
+    let result = {
+      "status": 401,
+      "message": 'no bueno...'
+    };
+    res.send(result);
+  }
+});
+
 module.exports = router;
 
 /*
