@@ -5,11 +5,10 @@ let router = express.Router();
 let db_pool = require('../bin/db_pool');
 let bcrypt = require('bcrypt');
 let aes_tool = require('../bin/aes_tool');
-let session = require('express-session');
-let FileStore = require('session-file-store')(session);
+let session_tool = require('../bin/session_tool');
 let api_settings = require('../bin/secret_settings').api_settings;
 let request = require('request');
-///suggestions/food/find/
+
 router.get('/food/:plan/:lat/:long', function(req, res) {
   if(req.session.uname && req.params.plan && req.params.lat && req.params.long) {
     let req_path = 'https://maps.googleapis.com';

@@ -4,8 +4,7 @@ let express = require('express');
 let db_pool = require('../bin/db_pool');
 let aes_tool = require('../bin/aes_tool');
 let bcrypt = require('bcrypt');
-let session = require('express-session');
-let FileStore = require('session-file-store')(session);
+let session_tool = require('../bin/session_tool');
 
 let router = express.Router();
 
