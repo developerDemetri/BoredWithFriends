@@ -5,6 +5,7 @@ let router = express.Router();
 let db_pool = require('../bin/db_pool');
 let bcrypt = require('bcrypt');
 let aes_tool = require('../bin/aes_tool');
+let redis_tool = require('../bin/redis_tool');
 let session_tool = require('../bin/session_tool');
 
 router.get('/', function(req, res) {

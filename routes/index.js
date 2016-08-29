@@ -4,6 +4,7 @@ let express = require('express');
 let db_pool = require('../bin/db_pool');
 let aes_tool = require('../bin/aes_tool');
 let bcrypt = require('bcrypt');
+let redis_tool = require('../bin/redis_tool');
 let session_tool = require('../bin/session_tool');
 
 let router = express.Router();
@@ -64,6 +65,59 @@ router.post('/auth', function(req, res) {
     let result = {
       "status": 400,
       "message": 'bad login'
+    };
+    res.send(result);
+  }
+});
+
+router.get('/location', function(req, res) {
+  if(req.session.uname) {
+    let r_key = req.session.uname + '-location';
+    redis_tool.get(r_key, function (err, data) {
+      let result;
+      if (err) {
+        result = {
+          "status": 500,
+          "error": 'Error retreiving location ):'
+        };
+        console.log(err);
+      }
+      else {
+        result = {
+          "status": 200,
+          "location": JSON.parse(data)
+        };
+      }
+      res.send(result);
+    });
+  }
+  else {
+    let result = {
+      "status": 401,
+      "message": 'no bueno...'
+    };
+    res.send(result);
+  }
+});
+
+router.post('/location', function(req, res) {
+  if(req.session.uname) {
+    let r_key = req.session.uname + '-location';
+    let new_location = {
+      latitude: req.body.lat,
+      longitude: req.body.long
+    };
+    redis_tool.set(r_key, JSON.stringify(new_location));
+    let result = {
+      "status": 200,
+      "message": 'location updated'
+    };
+    res.send(result);
+  }
+  else {
+    let result = {
+      "status": 401,
+      "message": 'no bueno...'
     };
     res.send(result);
   }

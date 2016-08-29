@@ -14,6 +14,7 @@ function setLocation() {
     navigator.geolocation.getCurrentPosition(function(position) {
       loc.lat = position.coords.latitude;
       loc.long = position.coords.longitude;
+      saveLocation(loc.lat, loc.long);
       $('#geoLoader').addClass("hide");
       $('#geoError').addClass("hide");
       $('#explore-vs-home').removeClass("hide");
@@ -23,6 +24,28 @@ function setLocation() {
     console.log('no geolocation ):');
     $('#geoError').removeClass("hide");
   }
+}
+
+function saveLocation(lat, long) {
+  console.log('updating location...');
+  let data = {
+    lat: lat,
+    long: long
+  };
+  let url = getServer()+'/location';
+  $.ajax({
+    type: "POST",
+    url: url,
+    data: data,
+    success: function(data) {
+      if(data.status == 200) {
+        console.log('successfully updated location');
+      }
+      else {
+        console.log('issue updating location');
+      }
+    }
+  });
 }
 
 function shortenName(name) {
