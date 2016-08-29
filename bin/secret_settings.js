@@ -1,8 +1,4 @@
 'use strict';
-let uuid = require('node-uuid');
-let session = require('express-session');
-let FileStore = require('session-file-store')(session);
-
 
 let pg_user;
 let pg_db;
@@ -19,8 +15,13 @@ let sesh_secret;
 
 let google_key;
 
+let redis_port;
+let redis_host;
+let redis_password;
+
 
 if (process.env.im_live) {
+  console.log('loading prod settings..');
   pg_user = process.env.pg_user;
   pg_db = process.env.pg_db;
   pg_pass = process.env.pg_pass;
@@ -32,6 +33,9 @@ if (process.env.im_live) {
   sesh_secret = process.env.sesh_secret;
   pg_ssl = process.env.pg_ssl;
   google_key = process.env.google_key;
+  redis_port = process.env.redis_port;
+  redis_host = process.env.redis_host;
+  redis_password = process.env.redis_password;
 }
 else {
   console.log('loading local settings..');
@@ -47,6 +51,9 @@ else {
   sesh_secret = local_settings.sesh_secret;
   pg_ssl = local_settings.pg_ssl;
   google_key = local_settings.google_key;
+  redis_port = local_settings.redis_port;
+  redis_host = local_settings.redis_host;
+  redis_password = local_settings.redis_password;
 }
 
 let db_config = {
@@ -64,33 +71,28 @@ let aes_config = {
   password: aes_pass
 };
 
-let storeOptions = {
-  encrypt: 'true',
-  ttl: 900
-};
-
-let session_settings = {
-  name: sesh_name,
-  store: new FileStore(storeOptions),
-  genid: function(req) {
-    return uuid.v4();
-  },
-  secret: sesh_secret,
-  saveUninitialized: true,
-  unset: 'destroy',
-  resave: 'true'
+let session_config = {
+  sesh_name: sesh_name,
+  sesh_secret: sesh_secret
 };
 
 let api_settings = {
   google_key: google_key
-}
+};
+
+let redis_config = {
+  port: redis_port,
+  host: redis_host,
+  password: redis_password
+};
 
 let secret_settings = {
   db_config: db_config,
   aes_config: aes_config,
-  session_settings: session_settings,
+  session_config: session_config,
   pg_ssl: pg_ssl,
-  api_settings: api_settings
+  api_settings: api_settings,
+  redis_config: redis_config
 };
 
 module.exports = secret_settings;

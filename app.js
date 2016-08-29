@@ -4,9 +4,8 @@ let path = require('path');
 let cookieParser = require('cookie-parser');
 let bodyParser = require('body-parser');
 let db_pool = require('./bin/db_pool');
-let session = require('express-session');
-let FileStore = require('session-file-store')(session);
-let session_settings = require('./bin/secret_settings').session_settings;
+let redis_tool = require('./bin/redis_tool');
+let session_tool = require('./bin/session_tool');
 
 let index = require('./routes/index');
 let register = require('./routes/register');
@@ -22,7 +21,7 @@ app.use(express.static('./public'));
 app.use(express.static('./public/stylesheets'));
 app.use(express.static('./public/images'));
 app.use(express.static('./public/javascripts'));
-app.use(session(session_settings));
+app.use(session_tool);
 
 app.use('/', index);
 app.use('/register', register);

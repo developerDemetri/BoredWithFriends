@@ -16,7 +16,14 @@
           <div id="geoLoader" class="progress">
               <div class="indeterminate"></div>
           </div>
-          <h1 id="geoError" class="red-text center-align hide">Sorry, Location is not enabled <i class="fa fa-frown-o" aria-hidden="true"></i></h1>
+          <div id="geoError" class="red-text center-align hide">
+            <h1>GPS/Location Is Not Enabled <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></h1>
+            <h2><a href="/">Please enable, then click here to retry <i class="fa fa-refresh" aria-hidden="true"></i></a></h2>
+          </div>
+          <div id="geo_issue_reload" class="red-text center-align hide">
+            <h1>Issue Loading Location <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></h1>
+            <h2><a href="/">Please check GPS connection, then click here to retry <i class="fa fa-refresh" aria-hidden="true"></i></a></h2>
+          </div>
           <div id="explore-vs-home" class="row hide">
             <h2 class="center-align blue-grey-text text-darken-4 hide-on-small-only">What are you in the mood for?</h2>
             <div class="col s6 m6">

@@ -5,24 +5,99 @@ var loc = {
   long: null
 }
 
+var geoUpdater;
+
 function setup() {
-  setLocation();
+  checkLocation(true);
+  geoUpdater = setInterval(function() {
+     checkLocation(false);
+  }, 30 * 1000);
 }
 
-function setLocation() {
+function kill_loading() {
+  $('#geoLoader').addClass("hide");
+  window.updateLocation = function(stuff) {return false;};
+  clearInterval(geoUpdater);
+  $('#geo_issue_reload').removeClass("hide");
+}
+
+function updateLocation(is_inital_load) {
   if ("geolocation" in navigator) {
+    var issueChecker;
+    if (is_inital_load) {
+      issueChecker = setInterval(function() {
+         kill_loading();
+      }, 20 * 1000);
+    }
     navigator.geolocation.getCurrentPosition(function(position) {
+      clearInterval(issueChecker);
       loc.lat = position.coords.latitude;
       loc.long = position.coords.longitude;
-      $('#geoLoader').addClass("hide");
-      $('#geoError').addClass("hide");
-      $('#explore-vs-home').removeClass("hide");
+      saveLocation(loc.lat, loc.long);
+      if (is_inital_load) {
+        $('#geoLoader').addClass("hide");
+        $('#geoError').addClass("hide");
+        $('#explore-vs-home').removeClass("hide");
+      }
     });
   }
   else {
     console.log('no geolocation ):');
-    $('#geoError').removeClass("hide");
+    if (is_inital_load) {
+      $('#geoError').removeClass("hide");
+    }
   }
+}
+
+function checkLocation(is_inital_load) {
+  if (is_inital_load) {
+    var loc_url = getServer()+'/location';
+    $.get(loc_url).done(function(data) {
+      if (data.status === 200) {
+        if (data.location) {
+          loc.lat = data.location.latitude;
+          loc.long = data.location.longitude;
+          $('#geoLoader').addClass("hide");
+          $('#geoError').addClass("hide");
+          $('#explore-vs-home').removeClass("hide");
+        }
+        else {
+          updateLocation(is_inital_load);
+        }
+      }
+      else {
+        console.log('error getting location');
+        if (is_inital_load) {
+          $('#geoError').removeClass("hide");
+        }
+      }
+    });
+  }
+  else {
+    updateLocation(is_inital_load);
+  }
+}
+
+function saveLocation(lat, long) {
+  console.log('updating location...');
+  var data = {
+    lat: lat,
+    long: long
+  };
+  var url = getServer()+'/location';
+  $.ajax({
+    type: "POST",
+    url: url,
+    data: data,
+    success: function(data) {
+      if(data.status == 200) {
+        console.log('successfully updated location');
+      }
+      else {
+        console.log('issue updating location');
+      }
+    }
+  });
 }
 
 function shortenName(name) {
@@ -139,7 +214,6 @@ function goShopping() {
   $('#explore-options').addClass("hide");
   $('#go-shopping').removeClass("hide");
   var go_shopping_url = getServer()+'/suggestions/shopping/'+loc.lat+'/'+loc.long;
-  console.log(go_shopping_url)
   $.get(go_shopping_url).done(function(data) {
     for (var i = 0; i < data.places.length; i++) {
       var card = '';
