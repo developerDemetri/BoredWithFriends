@@ -23,12 +23,14 @@ function kill_loading() {
 
 function updateLocation(is_inital_load) {
   if ("geolocation" in navigator) {
+    var issueChecker;
     if (is_inital_load) {
-      var issueChecker = setInterval(function() {
+      issueChecker = setInterval(function() {
          kill_loading();
       }, 20 * 1000);
     }
     navigator.geolocation.getCurrentPosition(function(position) {
+      clearInterval(issueChecker);
       loc.lat = position.coords.latitude;
       loc.long = position.coords.longitude;
       saveLocation(loc.lat, loc.long);
@@ -212,7 +214,6 @@ function goShopping() {
   $('#explore-options').addClass("hide");
   $('#go-shopping').removeClass("hide");
   var go_shopping_url = getServer()+'/suggestions/shopping/'+loc.lat+'/'+loc.long;
-  console.log(go_shopping_url)
   $.get(go_shopping_url).done(function(data) {
     for (var i = 0; i < data.places.length; i++) {
       var card = '';
