@@ -9,14 +9,8 @@ let redis_tool = new Redis({
   password: redis_config.password
 });
 
-redis_tool.set('connection test', 'connected to redis');
-redis_tool.get('connection test', function (err, result) {
-  if (err) {
-    console.log(err);
-  }
-  else {
-    console.log(result);
-  }
+redis_tool.on('connect', function () {
+  console.log('connected to redis');
 });
 
 

@@ -5,34 +5,84 @@ var loc = {
   long: null
 }
 
+var geoUpdater;
+
 function setup() {
-  setLocation();
+  checkLocation(true);
+  geoUpdater = setInterval(function() {
+     checkLocation(false);
+  }, 30 * 1000);
 }
 
-function setLocation() {
+function kill_loading() {
+  $('#geoLoader').addClass("hide");
+  window.updateLocation = function(stuff) {return false;};
+  clearInterval(geoUpdater);
+  $('#geo_issue_reload').removeClass("hide");
+}
+
+function updateLocation(is_inital_load) {
   if ("geolocation" in navigator) {
+    if (is_inital_load) {
+      var issueChecker = setInterval(function() {
+         kill_loading();
+      }, 20 * 1000);
+    }
     navigator.geolocation.getCurrentPosition(function(position) {
       loc.lat = position.coords.latitude;
       loc.long = position.coords.longitude;
       saveLocation(loc.lat, loc.long);
-      $('#geoLoader').addClass("hide");
-      $('#geoError').addClass("hide");
-      $('#explore-vs-home').removeClass("hide");
+      if (is_inital_load) {
+        $('#geoLoader').addClass("hide");
+        $('#geoError').addClass("hide");
+        $('#explore-vs-home').removeClass("hide");
+      }
     });
   }
   else {
     console.log('no geolocation ):');
-    $('#geoError').removeClass("hide");
+    if (is_inital_load) {
+      $('#geoError').removeClass("hide");
+    }
+  }
+}
+
+function checkLocation(is_inital_load) {
+  if (is_inital_load) {
+    var loc_url = getServer()+'/location';
+    $.get(loc_url).done(function(data) {
+      if (data.status === 200) {
+        if (data.location) {
+          loc.lat = data.location.latitude;
+          loc.long = data.location.longitude;
+          $('#geoLoader').addClass("hide");
+          $('#geoError').addClass("hide");
+          $('#explore-vs-home').removeClass("hide");
+        }
+        else {
+          updateLocation(is_inital_load);
+        }
+      }
+      else {
+        console.log('error getting location');
+        if (is_inital_load) {
+          $('#geoError').removeClass("hide");
+        }
+      }
+    });
+  }
+  else {
+    updateLocation(is_inital_load);
   }
 }
 
 function saveLocation(lat, long) {
   console.log('updating location...');
-  let data = {
+  var data = {
     lat: lat,
     long: long
   };
-  let url = getServer()+'/location';
+  var url = getServer()+'/location';
   $.ajax({
     type: "POST",
     url: url,

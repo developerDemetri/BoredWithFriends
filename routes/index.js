@@ -107,7 +107,7 @@ router.post('/location', function(req, res) {
       latitude: req.body.lat,
       longitude: req.body.long
     };
-    redis_tool.set(r_key, JSON.stringify(new_location));
+    redis_tool.set(r_key, JSON.stringify(new_location), 'EX', 180);
     let result = {
       "status": 200,
       "message": 'location updated'
