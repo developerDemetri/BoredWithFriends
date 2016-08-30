@@ -19,8 +19,8 @@ router.get('/', function(req, res) {
 
 router.post('/submit', function(req, res) {
   if (req.body.username && req.body.email && req.body.password) {
-    let username = req.body.username;
-    let email = aes_tool.encrypt(req.body.email);
+    let username = req.body.username.toLowerCase();
+    let email = aes_tool.encrypt(req.body.email.toLowerCase());
     let password = bcrypt.hashSync(req.body.password, 10);
     db_pool.connect(function(err, client, done) {
       if(err) {
@@ -65,6 +65,7 @@ router.post('/submit', function(req, res) {
 
 router.post('/checkusername', function(req, res) {
   if (req.body.username) {
+    let user = req.body.username.toLowerCase();
     db_pool.connect(function(err, client, done) {
       if(err) {
         let result = {
@@ -75,7 +76,7 @@ router.post('/checkusername', function(req, res) {
         res.send(result);
       }
       else {
-        client.query('SELECT COUNT(username) as count FROM public.bwf_user WHERE username=$1', [req.body.username], function(err, result) {
+        client.query('SELECT COUNT(username) as count FROM public.bwf_user WHERE username=$1', [user], function(err, result) {
           done();
           if(err) {
             console.log("Query Error", err);
@@ -116,7 +117,7 @@ router.post('/checkusername', function(req, res) {
 
 router.post('/checkemail', function(req, res) {
   if (req.body.email) {
-    let email = aes_tool.encrypt(req.body.email);
+    let email = aes_tool.encrypt(req.body.email.toLowerCase());
     db_pool.connect(function(err, client, done) {
       if(err) {
         let result = {

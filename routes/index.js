@@ -20,6 +20,7 @@ router.get('/', function(req, res) {
 
 router.post('/auth', function(req, res) {
   if (req.body.username && req.body.password) {
+    let user = req.body.username.toLowerCase();
     db_pool.connect(function(err, client, done) {
       if(err) {
         let result = {
@@ -30,7 +31,7 @@ router.post('/auth', function(req, res) {
         res.send(result);
       }
       else {
-        client.query('SELECT password FROM public.bwf_user WHERE username=$1', [req.body.username], function(err, result) {
+        client.query('SELECT password FROM public.bwf_user WHERE username=$1', [user], function(err, result) {
           done();
           if(err) {
             console.log("Query Error", err);
@@ -42,7 +43,7 @@ router.post('/auth', function(req, res) {
           }
           else {
             if(result.rows[0] && bcrypt.compareSync(req.body.password, result.rows[0].password)) {
-              req.session.uname = req.body.username;
+              req.session.uname = user;
               let result = {
                 "status": 200,
                 "message": 'successful login'
