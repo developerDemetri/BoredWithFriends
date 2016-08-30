@@ -19,7 +19,9 @@ router.get('/', function(req, res) {
 });
 
 router.post('/auth', function(req, res) {
-  if (req.body.username && req.body.password) {
+  let pass_re = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9!@#$%^&*/._+-]{8,31})$/;
+  let uname_re = /^(\w{3,63})$/;
+  if (req.body.username && req.body.password && uname_re.test(req.body.username) && pass_re.test(req.body.password)) {
     let user = req.body.username.toLowerCase();
     db_pool.connect(function(err, client, done) {
       if(err) {

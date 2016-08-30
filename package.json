@@ -19,7 +19,8 @@
     "node-uuid": "^1.4.7",
     "pg": "^6.0.3",
     "request": "^2.74.0",
-    "session-file-store": "^0.2.0"
+    "session-file-store": "^0.2.0",
+    "validator": "^5.5.0"
   },
   "repository": {
     "type": "git",

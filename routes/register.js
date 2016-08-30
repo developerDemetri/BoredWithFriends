@@ -7,6 +7,7 @@ let bcrypt = require('bcrypt');
 let aes_tool = require('../bin/aes_tool');
 let redis_tool = require('../bin/redis_tool');
 let session_tool = require('../bin/session_tool');
+let validator = require('validator');
 
 router.get('/', function(req, res) {
   if(req.session.uname) {
@@ -19,40 +20,51 @@ router.get('/', function(req, res) {
 
 router.post('/submit', function(req, res) {
   if (req.body.username && req.body.email && req.body.password) {
-    let username = req.body.username.toLowerCase();
-    let email = aes_tool.encrypt(req.body.email.toLowerCase());
-    let password = bcrypt.hashSync(req.body.password, 10);
-    db_pool.connect(function(err, client, done) {
-      if(err) {
-        let result = {
-          "status": 500,
-          "error": 'error connecting to database'
-        };
-        console.log('error fetching client from pool: ', err);
-        res.send(result);
-      }
-      else {
-        client.query('INSERT INTO public.bwf_user (username, email, password) VALUES ($1, $2, $3)', [username,email,password], function(err, result) {
-          done();
-          if(err) {
-            console.log("Query Error", err);
-            let result = {
-              "status": 500,
-              "error": 'error creating user in database'
-            };
-            res.send(result);
-          }
-          else {
-            req.session.uname = username;
-            let result = {
-              "status": 201,
-              "message": 'user successfully created'
-            };
-            res.send(result);
-          }
-        });
-      }
-    });
+    let pass_re = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9!@#$%^&*/._+-]{8,31})$/;
+    let uname_re = /^(\w{3,63})$/;
+    if (validator.isEmail(req.body.email) && uname_re.test(req.body.username) && pass_re.test(req.body.password)) {
+      let username = req.body.username.toLowerCase();
+      let email = aes_tool.encrypt(req.body.email.toLowerCase());
+      let password = bcrypt.hashSync(req.body.password, 10);
+      db_pool.connect(function(err, client, done) {
+        if(err) {
+          let result = {
+            "status": 500,
+            "error": 'error connecting to database'
+          };
+          console.log('error fetching client from pool: ', err);
+          res.send(result);
+        }
+        else {
+          client.query('INSERT INTO public.bwf_user (username, email, password) VALUES ($1, $2, $3)', [username,email,password], function(err, result) {
+            done();
+            if(err) {
+              console.log("Query Error", err);
+              let result = {
+                "status": 500,
+                "error": 'error creating user in database'
+              };
+              res.send(result);
+            }
+            else {
+              req.session.uname = username;
+              let result = {
+                "status": 201,
+                "message": 'user successfully created'
+              };
+              res.send(result);
+            }
+          });
+        }
+      });
+    }
+    else {
+      let result = {
+        "status": 400,
+        "message": 'Invalid User Details'
+      };
+      res.send(result);
+    }
   }
   else {
     let result = {
@@ -64,7 +76,8 @@ router.post('/submit', function(req, res) {
 });
 
 router.post('/checkusername', function(req, res) {
-  if (req.body.username) {
+  let uname_re = /^(\w{3,63})$/;
+  if (req.body.username && uname_re.test(req.body.username)) {
     let user = req.body.username.toLowerCase();
     db_pool.connect(function(err, client, done) {
       if(err) {
@@ -116,7 +129,7 @@ router.post('/checkusername', function(req, res) {
 });
 
 router.post('/checkemail', function(req, res) {
-  if (req.body.email) {
+  if (req.body.email && validator.isEmail(req.body.email)) {
     let email = aes_tool.encrypt(req.body.email.toLowerCase());
     db_pool.connect(function(err, client, done) {
       if(err) {
