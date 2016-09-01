@@ -1,16 +1,18 @@
 'use strict';
 let app = require('../app');
 let express = require('express');
-let router = express.Router();
 let db_pool = require('../bin/db_pool');
 let bcrypt = require('bcrypt');
 let aes_tool = require('../bin/aes_tool');
 let redis_tool = require('../bin/redis_tool');
 let session_tool = require('../bin/session_tool');
 let validator = require('validator');
+let uname_re = /^(\w{3,63})$/;
+
+let router = express.Router();
 
 router.get('/', function(req, res) {
-  if(req.session.uname) {
+  if(req.session.uname && uname_re.test(req.session.uname)) {
     res.render('home');
   }
   else {
@@ -21,7 +23,6 @@ router.get('/', function(req, res) {
 router.post('/submit', function(req, res) {
   if (req.body.username && req.body.email && req.body.password) {
     let pass_re = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9!@#$%^&*/._+-]{8,31})$/;
-    let uname_re = /^(\w{3,63})$/;
     if (validator.isEmail(req.body.email) && uname_re.test(req.body.username) && pass_re.test(req.body.password)) {
       let username = req.body.username.toLowerCase();
       let email = aes_tool.encrypt(req.body.email.toLowerCase());
@@ -76,7 +77,6 @@ router.post('/submit', function(req, res) {
 });
 
 router.post('/checkusername', function(req, res) {
-  let uname_re = /^(\w{3,63})$/;
   if (req.body.username && uname_re.test(req.body.username)) {
     let user = req.body.username.toLowerCase();
     db_pool.connect(function(err, client, done) {

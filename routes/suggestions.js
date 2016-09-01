@@ -1,7 +1,6 @@
 'use strict';
 let app = require('../app');
 let express = require('express');
-let router = express.Router();
 let db_pool = require('../bin/db_pool');
 let bcrypt = require('bcrypt');
 let aes_tool = require('../bin/aes_tool');
@@ -9,9 +8,13 @@ let redis_tool = require('../bin/redis_tool');
 let session_tool = require('../bin/session_tool');
 let api_settings = require('../bin/secret_settings').api_settings;
 let request = require('request');
+let validator = require('validator');
+let uname_re = /^(\w{3,63})$/;
+
+let router = express.Router();
 
 router.get('/food/:plan/:lat/:long', function(req, res) {
-  if(req.session.uname && req.params.plan && req.params.lat && req.params.long) {
+  if(req.session.uname && uname_re.test(req.session.uname) && req.params.plan && req.params.lat && req.params.long && validator.isDecimal(req.params.lat) && validator.isDecimal(req.params.long)) {
     let req_path = 'https://maps.googleapis.com';
     req_path += '/maps/api/place/nearbysearch/json?';
     req_path += 'key='+api_settings.google_key;
@@ -69,7 +72,7 @@ router.get('/food/:plan/:lat/:long', function(req, res) {
 });
 
 router.get('/shopping/:lat/:long', function(req, res) {
-  if(req.session.uname && req.params.lat && req.params.long) {
+  if(req.session.uname && uname_re.test(req.session.uname) && req.params.lat && req.params.long && validator.isDecimal(req.params.lat) && validator.isDecimal(req.params.long)) {
     let req_path = 'https://maps.googleapis.com';
     req_path += '/maps/api/place/nearbysearch/json?';
     req_path += 'key='+api_settings.google_key;

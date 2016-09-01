@@ -6,11 +6,13 @@ let aes_tool = require('../bin/aes_tool');
 let bcrypt = require('bcrypt');
 let redis_tool = require('../bin/redis_tool');
 let session_tool = require('../bin/session_tool');
+let validator = require('validator');
+let uname_re = /^(\w{3,63})$/;
 
 let router = express.Router();
 
 router.get('/', function(req, res) {
-  if(req.session.uname) {
+  if(req.session.uname && uname_re.test(req.session.uname)) {
     res.render('home');
   }
   else {
@@ -20,7 +22,6 @@ router.get('/', function(req, res) {
 
 router.post('/auth', function(req, res) {
   let pass_re = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9!@#$%^&*/._+-]{8,31})$/;
-  let uname_re = /^(\w{3,63})$/;
   if (req.body.username && req.body.password && uname_re.test(req.body.username) && pass_re.test(req.body.password)) {
     let user = req.body.username.toLowerCase();
     db_pool.connect(function(err, client, done) {
@@ -74,7 +75,7 @@ router.post('/auth', function(req, res) {
 });
 
 router.get('/location', function(req, res) {
-  if(req.session.uname) {
+  if(req.session.uname && uname_re.test(req.session.uname)) {
     let r_key = req.session.uname + '-location';
     redis_tool.get(r_key, function (err, data) {
       let result;
@@ -104,7 +105,7 @@ router.get('/location', function(req, res) {
 });
 
 router.post('/location', function(req, res) {
-  if(req.session.uname) {
+  if(req.session.uname && uname_re.test(req.session.uname) && req.body.lat && req.body.long && validator.isDecimal(req.body.lat) && validator.isDecimal(req.body.long)) {
     let r_key = req.session.uname + '-location';
     let new_location = {
       latitude: req.body.lat,
@@ -127,7 +128,7 @@ router.post('/location', function(req, res) {
 });
 
 router.post('/logout', function(req, res) {
-  if(req.session.uname) {
+  if(req.session.uname && uname_re.test(req.session.uname)) {
     req.session.destroy();
     let result = {
       "status": 200,
