@@ -55,8 +55,8 @@ router.post('/auth', function(req, res) {
             }
             else {
               let result = {
-                "status": 400,
-                "message": 'bad login'
+                "status": 200,
+                "message": 'invalid login'
               };
               res.send(result);
             }
