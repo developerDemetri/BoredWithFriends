@@ -21,6 +21,7 @@ let redis_password;
 
 let test_user;
 let test_pass;
+let test_email;
 
 
 if (process.env.im_live) {
@@ -41,6 +42,7 @@ if (process.env.im_live) {
   redis_password = process.env.redis_password;
   test_user = process.env.test_user;
   test_pass = process.env.test_pass;
+  test_email = process.env.test_email;
 }
 else {
   console.log('loading local settings..');
@@ -61,6 +63,7 @@ else {
   redis_password = local_settings.redis_password;
   test_user = local_settings.test_user;
   test_pass = local_settings.test_pass;
+  test_email = local_settings.test_email;
 }
 
 let db_config = {
@@ -95,7 +98,8 @@ let redis_config = {
 
 let testing_config = {
   user: test_user,
-  pass: test_pass
+  pass: test_pass,
+  email: test_email
 };
 
 let secret_settings = {

@@ -24,6 +24,7 @@
     "pg": "^6.0.3",
     "request": "^2.74.0",
     "session-file-store": "^0.2.0",
+    "supertest": "^2.0.0",
     "validator": "^5.5.0"
   },
   "repository": {
