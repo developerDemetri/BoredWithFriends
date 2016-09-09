@@ -19,6 +19,9 @@ let redis_port;
 let redis_host;
 let redis_password;
 
+let test_user;
+let test_pass;
+
 
 if (process.env.im_live) {
   console.log('loading prod settings..');
@@ -36,6 +39,8 @@ if (process.env.im_live) {
   redis_port = process.env.redis_port;
   redis_host = process.env.redis_host;
   redis_password = process.env.redis_password;
+  test_user = process.env.test_user;
+  test_pass = process.env.test_pass;
 }
 else {
   console.log('loading local settings..');
@@ -54,6 +59,8 @@ else {
   redis_port = local_settings.redis_port;
   redis_host = local_settings.redis_host;
   redis_password = local_settings.redis_password;
+  test_user = local_settings.test_user;
+  test_pass = local_settings.test_pass;
 }
 
 let db_config = {
@@ -86,13 +93,19 @@ let redis_config = {
   password: redis_password
 };
 
+let testing_config = {
+  user: test_user,
+  pass: test_pass
+};
+
 let secret_settings = {
   db_config: db_config,
   aes_config: aes_config,
   session_config: session_config,
   pg_ssl: pg_ssl,
   api_settings: api_settings,
-  redis_config: redis_config
+  redis_config: redis_config,
+  testing_config: testing_config
 };
 
 module.exports = secret_settings;

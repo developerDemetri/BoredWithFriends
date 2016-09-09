@@ -5,7 +5,9 @@ let assert = chai.assert;
 let request = require('supertest');
 let express = require('express');
 let app = require('../app');
-let login_tool = require('./login_tool');
+let testing_config = require('../bin/secret_settings').testing_config;
+
+let cookies;
 
 describe('Log In', function() {
   it('Should require a password', function(done) {
@@ -87,14 +89,15 @@ describe('Log In', function() {
     request(app)
       .post('/auth')
       .send({
-        "username": 'test',
-        "password": 'testing1'
+        "username": testing_config.user,
+        "password": testing_config.pass
       })
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
         assert.equal(res.body.status, 200, 'valid login');
         assert.equal(res.body.message, 'successful login', 'successful login');
+        cookies = res.headers['set-cookie'].pop().split(';')[0];
         done();
       });
   });
@@ -110,13 +113,14 @@ describe('Log In', function() {
       });
   });
   it('Should log out when already logged in', function(done) {
-    request(app)
-      .post('/logout')
+    let req = request(app).post('/logout');
+    req.cookies = cookies;
+    req
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
         assert.equal(res.body.status, 200, 'successful logout');
-        assert.equal(res.body.message, 'derp', 'derp');
+        assert.equal(res.body.message, 'successful logout', 'successful logout');
         done();
       });
   });
