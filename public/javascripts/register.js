@@ -1,7 +1,9 @@
 'use strict';
+
+var user = null;
+
 function register() {
-  $('#registerBtn').addClass('hide');
-  $('#registerLoadingCircle').removeClass('hide');
+  startLoading();
   var username = $('#username').val();
   var email = $('#eml').val();
   var password1 = $('#pass1').val();
@@ -35,7 +37,12 @@ function register() {
                     if (data2.validity) {
                       $("#badEmail").addClass("hide");
                       if (checkPass(password1,password2)) {
-                        insertUser(username,email,password1);
+                        user = {
+                          'username': username,
+                          'email': email,
+                          'password': password1
+                        };
+                        loadModal();
                       }
                       else {
                         stopLoading();
@@ -79,22 +86,22 @@ function register() {
   }
 };
 
+function startLoading() {
+  $('#registerBtn').addClass('hide');
+  $('#registerLoadingCircle').removeClass('hide');
+}
+
 function stopLoading() {
   $('#registerLoadingCircle').addClass('hide');
   $('#registerBtn').removeClass('hide');
 }
 
-function insertUser(username,email,password) {
+function insertUser() {
   var url = getServer()+'/register/submit';
-  var data = {
-    "username": username,
-    "email": email,
-    "password": password
-  };
   $.ajax({
     type: "POST",
     url: url,
-    data: data,
+    data: user,
     success: function(data) {
       if (data.status === 201) {
         var homeUrl = getServer()+'/'
@@ -110,15 +117,18 @@ function insertUser(username,email,password) {
 
 function loadModal() {
   $('#terms-modal').openModal();
+  stopLoading();
 }
 
 function rejectTerms() {
+  user = null;
   $('#terms-modal').closeModal();
 }
 
 function acceptTerms() {
+  insertUser();
+  startLoading();
   $('#terms-modal').closeModal();
-  register();
 }
 
 function checkPass(pass1, pass2) {
