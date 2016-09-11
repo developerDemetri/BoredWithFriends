@@ -105,18 +105,29 @@ router.get('/location', function(req, res) {
 });
 
 router.post('/location', function(req, res) {
-  if(req.session.uname && uname_re.test(req.session.uname) && req.body.lat && req.body.long && validator.isDecimal(req.body.lat) && validator.isDecimal(req.body.long)) {
-    let r_key = req.session.uname + '-location';
-    let new_location = {
-      latitude: req.body.lat,
-      longitude: req.body.long
-    };
-    redis_tool.set(r_key, JSON.stringify(new_location), 'EX', 180);
-    let result = {
-      "status": 200,
-      "message": 'location updated'
-    };
-    res.send(result);
+  if(req.session.uname && uname_re.test(req.session.uname) && req.body.lat && req.body.long) {
+    let lat = req.body.lat + '';
+    let long = req.body.long + '';
+    if (validator.isDecimal(lat) && validator.isDecimal(long)) {
+      let r_key = req.session.uname + '-location';
+      let new_location = {
+        latitude: lat,
+        longitude: long
+      };
+      redis_tool.set(r_key, JSON.stringify(new_location), 'EX', 180);
+      let result = {
+        "status": 200,
+        "message": 'location updated'
+      };
+      res.send(result);
+    }
+    else {
+      let result = {
+        "status": 400,
+        "message": 'invalid coordinates'
+      };
+      res.send(result);
+    }
   }
   else {
     let result = {

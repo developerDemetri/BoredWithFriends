@@ -7,11 +7,21 @@ let express = require('express');
 let app = require('../app');
 let testing_config = require('../bin/secret_settings').testing_config;
 
-let cookies;
 let lat = 33.426734;
 let long = -111.931189;
 
 describe('Suggestions', function() {
+  it('Should not get nearby food suggestions when not logged in', function(done) {
+    let req = request(app).get('/suggestions/food/find/'+lat+'/'+long);
+    req
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 401, 'food request blocked');
+        assert.equal(res.body.message, 'no bueno...', 'food request blocked');
+        done();
+      });
+  });
   it('Should not get nearby shopping suggestions when not logged in', function(done) {
     let req = request(app).get('/suggestions/shopping/'+lat+'/'+long);
     req
@@ -23,6 +33,7 @@ describe('Suggestions', function() {
         done();
       });
   });
+  let cookies;
   it('Setting up authentication', function(done) {
     request(app)
       .post('/auth')
@@ -46,8 +57,32 @@ describe('Suggestions', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'got a list of places');
-        assert.isNotNull(res.body.places, 'got a list of places');
+        assert.equal(res.body.status, 200, 'got a list of shopping places');
+        assert.isNotNull(res.body.places, 'got a list of shopping places');
+        done();
+      });
+  });
+  it('Should get nearby food suggestions when logged in', function(done) {
+    let req = request(app).get('/suggestions/food/find/'+lat+'/'+long);
+    req.cookies = cookies;
+    req
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 200, 'got a list of food places');
+        assert.isNotNull(res.body.places, 'got a list of food places');
+        done();
+      });
+  });
+  it('Should get nearby delivery suggestions when logged in', function(done) {
+    let req = request(app).get('/suggestions/food/order/'+lat+'/'+long);
+    req.cookies = cookies;
+    req
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 200, 'got a list of delivery places');
+        assert.isNotNull(res.body.places, 'got a list of delivery places');
         done();
       });
   });
@@ -60,6 +95,7 @@ describe('Suggestions', function() {
         if (err) done(err);
         assert.equal(res.body.status, 200, 'successful logout');
         assert.equal(res.body.message, 'successful logout', 'successful logout');
+        cookies = null;
         done();
       });
   });
