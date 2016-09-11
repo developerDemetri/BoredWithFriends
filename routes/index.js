@@ -153,7 +153,7 @@ router.post('/location/custom', function(req, res) {
             redis_tool.set(r_key, JSON.stringify(new_location), 'EX', 300);
             req.session.location = new_location;
             let result = {
-              "status": 200,
+              "status": 202,
               "message": 'custom location set'
             };
             res.send(result);

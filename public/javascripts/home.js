@@ -31,7 +31,7 @@ function setCustomLocation() {
         address: address
       },
       success: function(data) {
-        if (data.status === 200) {
+        if (data.status === 202) {
           console.log('successfully set custom location');
           $('#geo_issue_reload').addClass("hide");
           $('#explore-vs-home').removeClass("hide");
