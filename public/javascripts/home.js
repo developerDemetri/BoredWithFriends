@@ -6,12 +6,51 @@ var loc = {
 }
 
 var geoUpdater;
+var issueChecker;
 
 function setup() {
   checkLocation(true);
   geoUpdater = setInterval(function() {
      checkLocation(false);
-  }, 30 * 1000);
+  }, 10 * 1000);
+}
+
+function setCustomLocation() {
+  var re = /^[^<>={}]{2,255}$/;
+  $('#locationBtn').addClass("hide");
+  $('#customLocationLoadingCircle').removeClass("hide");
+  var address = $('#customLocation').val();
+  if (address && re.test(address)) {
+    $('#customLocationError').addClass("hide");
+    address += '';
+    var url = getServer()+'/location/custom';
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: {
+        address: address
+      },
+      success: function(data) {
+        if (data.status === 202) {
+          console.log('successfully set custom location');
+          $('#geo_issue_reload').addClass("hide");
+          $('#explore-vs-home').removeClass("hide");
+          clearInterval(geoUpdater);
+          clearInterval(issueChecker);
+        }
+        else {
+          console.log('issue setting custom location');
+          $('#customLocationError').removeClass("hide");
+        }
+        $('#locationBtn').removeClass("hide");
+        $('#customLocationLoadingCircle').addClass("hide");
+      }
+    });
+  }
+  else {
+    console.log('issue setting custom location');
+    $('#customLocationError').removeClass("hide");
+  }
 }
 
 function kill_loading() {
@@ -23,7 +62,6 @@ function kill_loading() {
 
 function updateLocation(is_inital_load) {
   if ("geolocation" in navigator) {
-    var issueChecker;
     if (is_inital_load) {
       issueChecker = setInterval(function() {
          kill_loading();
@@ -90,7 +128,7 @@ function saveLocation(lat, long) {
     url: url,
     data: data,
     success: function(data) {
-      if(data.status == 200) {
+      if(data.status === 200) {
         console.log('successfully updated location');
       }
       else {

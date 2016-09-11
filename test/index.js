@@ -156,6 +156,20 @@ describe('Location', function() {
         done();
       });
   });
+  it('Should not set unauthenticated users custom location', function(done) {
+    request(app)
+      .post('/location/custom')
+      .send({
+        "address": 'Amsterdam'
+      })
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 401, 'custom location denied');
+        assert.equal(res.body.message, 'no bueno...', 'location denied');
+        done();
+      });
+  });
   let cookies;
   it('Setting up authentication', function(done) {
     request(app)
@@ -216,6 +230,51 @@ describe('Location', function() {
         assert.isNotNull(res.body.location, 'location retreived')
         assert.equal(res.body.location.latitude, lat, 'latitude retreived');
         assert.equal(res.body.location.longitude, long, 'longitude retreived');
+        done();
+      });
+  });
+  it('Should not set users unsafe custom location', function(done) {
+    let req = request(app).post('/location/custom');
+    req.cookies = cookies;
+    req
+      .send({
+        "address": 'dsflksdjflkdsjfsdlkfjsdlkfjds'
+      })
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 400, 'invalid custom location');
+        assert.equal(res.body.message, 'invalid custom location', 'invalid custom location');
+        done();
+      });
+  });
+  it('Should not set users invalid custom location', function(done) {
+    let req = request(app).post('/location/custom');
+    req.cookies = cookies;
+    req
+      .send({
+        "address": 'holland<script>killEverything()</script>'
+      })
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 401, 'custom location denied');
+        assert.equal(res.body.message, 'no bueno...', 'location denied');
+        done();
+      });
+  });
+  it('Should set users valid custom location', function(done) {
+    let req = request(app).post('/location/custom');
+    req.cookies = cookies;
+    req
+      .send({
+        "address": 'Amsterdam'
+      })
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 202, 'valid custom location');
+        assert.equal(res.body.message, 'custom location set', 'valid custom location');
         done();
       });
   });
