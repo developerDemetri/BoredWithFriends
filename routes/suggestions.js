@@ -1,7 +1,7 @@
 'use strict';
 let app = require('../app');
 let express = require('express');
-let db_pool = require('../bin/db_pool');
+let pg_tool = require('../bin/pg_tool');
 let bcrypt = require('bcrypt');
 let aes_tool = require('../bin/aes_tool');
 let redis_tool = require('../bin/redis_tool');
