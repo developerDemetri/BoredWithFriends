@@ -12,7 +12,7 @@ let uname_re = /^(\w{3,63})$/;
 let router = express.Router();
 
 router.get('/', function(req, res) {
-  if(req.session.uname && uname_re.test(req.session.uname)) {
+  if(req.session.uname && (typeof req.session.uname) === 'string' && uname_re.test(req.session.uname)) {
     res.render('home');
   }
   else {
@@ -22,8 +22,9 @@ router.get('/', function(req, res) {
 
 router.post('/auth', function(req, res) {
   let pass_re = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9!@#$%^&*/._+-]{8,31})$/;
-  if (req.body.username && req.body.password && uname_re.test(req.body.username) && pass_re.test(req.body.password)) {
-    let user = req.body.username.toLowerCase();
+  if (req.body.username && req.body.password && (typeof req.body.username) === 'string' && (typeof req.body.password) === 'string' && uname_re.test(req.body.username) && pass_re.test(req.body.password)) {
+    let user = req.body.username + '';
+    user = user.toLowerCase();
     db_pool.connect(function(err, client, done) {
       if(err) {
         let result = {
@@ -75,7 +76,7 @@ router.post('/auth', function(req, res) {
 });
 
 router.get('/location', function(req, res) {
-  if(req.session.uname && uname_re.test(req.session.uname)) {
+  if(req.session.uname && (typeof req.session.uname) === 'string' && uname_re.test(req.session.uname)) {
     let r_key = req.session.uname + '-location';
     redis_tool.get(r_key, function (err, data) {
       let result;
@@ -91,6 +92,7 @@ router.get('/location', function(req, res) {
           "status": 200,
           "location": JSON.parse(data)
         };
+        req.session.location = result.location;
       }
       res.send(result);
     });
@@ -105,7 +107,7 @@ router.get('/location', function(req, res) {
 });
 
 router.post('/location', function(req, res) {
-  if(req.session.uname && uname_re.test(req.session.uname) && req.body.lat && req.body.long) {
+  if(req.session.uname && (typeof req.session.uname) === 'string' && uname_re.test(req.session.uname) && req.body.lat && req.body.long) {
     let lat = req.body.lat + '';
     let long = req.body.long + '';
     if (validator.isDecimal(lat) && validator.isDecimal(long)) {
@@ -115,6 +117,7 @@ router.post('/location', function(req, res) {
         longitude: long
       };
       redis_tool.set(r_key, JSON.stringify(new_location), 'EX', 180);
+      req.session.location = new_location;
       let result = {
         "status": 200,
         "message": 'location updated'
@@ -139,7 +142,7 @@ router.post('/location', function(req, res) {
 });
 
 router.post('/logout', function(req, res) {
-  if(req.session.uname && uname_re.test(req.session.uname)) {
+  if(req.session.uname && (typeof req.session.uname) === 'string' && uname_re.test(req.session.uname)) {
     req.session.destroy();
     let result = {
       "status": 200,
@@ -151,6 +154,50 @@ router.post('/logout', function(req, res) {
     let result = {
       "status": 400,
       "message": 'no session to log out of...'
+    };
+    res.send(result);
+  }
+});
+
+router.delete('/account', function(req, res) {
+  if(req.session.uname && (typeof req.session.uname) === 'string' && uname_re.test(req.session.uname)) {
+    let uname = req.session.uname + '';
+    db_pool.connect(function(err, client, done) {
+      if(err) {
+        let result = {
+          "status": 500,
+          "error": 'error connecting to database'
+        };
+        console.log('error fetching client from pool: ', err);
+        res.send(result);
+      }
+      else {
+        client.query('DELETE FROM public.bwf_user WHERE username=$1', [uname], function(err, result) {
+          done();
+          if(err) {
+            console.log("Query Error", err);
+            let result = {
+              "status": 500,
+              "error": 'error deleting user from database'
+            };
+            res.send(result);
+          }
+          else {
+            req.session.destroy();
+            let result = {
+              "status": 202,
+              "message": 'user successfully deleted'
+            };
+            res.send(result);
+          }
+        });
+      }
+    });
+  }
+  else {
+    let result = {
+      "status": 401,
+      "message": 'no bueno...'
     };
     res.send(result);
   }

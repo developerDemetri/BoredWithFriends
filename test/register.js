@@ -7,7 +7,7 @@ let express = require('express');
 let app = require('../app');
 let testing_config = require('../bin/secret_settings').testing_config;
 
-describe('Register', function() {
+describe('Pre-Register', function() {
   it('Should not pass an invalid username', function(done) {
     request(app)
       .post('/register/checkusername')
@@ -92,5 +92,101 @@ describe('Register', function() {
         done();
       });
   });
-  //need to add regiser and delete account stuff later//
+});
+
+describe('Register and Delete', function() {
+  it('Should not allow null fields', function(done) {
+    request(app)
+      .post('/register/submit')
+      .send({
+        "username":'lol bruh',
+        "email": null,
+        "password": 'derp'
+      })
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 400, 'missing field');
+        assert.equal(res.body.message, 'Invalid User Details', 'missing field');
+        done();
+      });
+  });
+  it('Should require a valid username', function(done) {
+    request(app)
+      .post('/register/submit')
+      .send({
+        "username":'lol bruh',
+        "email": 'hey@test.com',
+        "password": 'derp12345'
+      })
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 400, 'invalid username');
+        assert.equal(res.body.message, 'Invalid User Details', 'invalid username');
+        done();
+      });
+  });
+  it('Should require a valid email', function(done) {
+    request(app)
+      .post('/register/submit')
+      .send({
+        "username":'supercooltester',
+        "email": 'rawr (:',
+        "password": 'derp12345'
+      })
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 400, 'invalid email');
+        assert.equal(res.body.message, 'Invalid User Details', 'invalid email');
+        done();
+      });
+  });
+  it('Should require a valid password', function(done) {
+    request(app)
+      .post('/register/submit')
+      .send({
+        "username":'supercooltester',
+        "email": 'heythere@test.com',
+        "password": 'derp1'
+      })
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 400, 'invalid email');
+        assert.equal(res.body.message, 'Invalid User Details', 'invalid email');
+        done();
+      });
+  });
+  let cookies;
+  it('Should register valid user details', function(done) {
+    request(app)
+      .post('/register/submit')
+      .send({
+        "username":'supercooltester',
+        "email": 'heythere@test.com',
+        "password": 'derp12345'
+      })
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 201, 'valid user');
+        assert.equal(res.body.message, 'user successfully created', 'valid user');
+        cookies = res.headers['set-cookie'].pop().split(';')[0];
+        done();
+      });
+  });
+  it('Should delete user account', function(done) {
+    let req = request(app).delete('/account');
+    req.cookies = cookies;
+    req
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 202, 'user deleted');
+        assert.equal(res.body.message, 'user successfully deleted', 'user deleted');
+        done();
+      });
+  });
 });

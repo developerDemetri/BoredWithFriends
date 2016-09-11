@@ -12,7 +12,7 @@ let long = -111.931189;
 
 describe('Suggestions', function() {
   it('Should not get nearby food suggestions when not logged in', function(done) {
-    let req = request(app).get('/suggestions/food/find/'+lat+'/'+long);
+    let req = request(app).get('/suggestions/food/find');
     req
       .expect('Content-Type', /json/)
       .end(function(err, res) {
@@ -23,7 +23,7 @@ describe('Suggestions', function() {
       });
   });
   it('Should not get nearby shopping suggestions when not logged in', function(done) {
-    let req = request(app).get('/suggestions/shopping/'+lat+'/'+long);
+    let req = request(app).get('/suggestions/shopping');
     req
       .expect('Content-Type', /json/)
       .end(function(err, res) {
@@ -50,8 +50,38 @@ describe('Suggestions', function() {
         done();
       });
   });
+  it('Should set authenticated users valid location', function(done) {
+    let req = request(app).post('/location');
+    req.cookies = cookies;
+    req
+      .send({
+        "lat": lat,
+        "long": long
+      })
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 200, 'location updated');
+        assert.equal(res.body.message, 'location updated', 'location updated');
+        done();
+      });
+  });
+  it('Should get authenticated users location', function(done) {
+    let req = request(app).get('/location');
+    req.cookies = cookies;
+    req
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 200, 'location retreived');
+        assert.isNotNull(res.body.location, 'location retreived')
+        assert.equal(res.body.location.latitude, lat, 'latitude retreived');
+        assert.equal(res.body.location.longitude, long, 'longitude retreived');
+        done();
+      });
+  });
   it('Should get nearby shopping suggestions when logged in', function(done) {
-    let req = request(app).get('/suggestions/shopping/'+lat+'/'+long);
+    let req = request(app).get('/suggestions/shopping');
     req.cookies = cookies;
     req
       .expect('Content-Type', /json/)
@@ -63,7 +93,7 @@ describe('Suggestions', function() {
       });
   });
   it('Should get nearby food suggestions when logged in', function(done) {
-    let req = request(app).get('/suggestions/food/find/'+lat+'/'+long);
+    let req = request(app).get('/suggestions/food/find');
     req.cookies = cookies;
     req
       .expect('Content-Type', /json/)
@@ -75,7 +105,7 @@ describe('Suggestions', function() {
       });
   });
   it('Should get nearby delivery suggestions when logged in', function(done) {
-    let req = request(app).get('/suggestions/food/order/'+lat+'/'+long);
+    let req = request(app).get('/suggestions/food/order');
     req.cookies = cookies;
     req
       .expect('Content-Type', /json/)

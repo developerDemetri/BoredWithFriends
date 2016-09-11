@@ -13,17 +13,17 @@ let uname_re = /^(\w{3,63})$/;
 
 let router = express.Router();
 
-router.get('/food/:plan/:lat/:long', function(req, res) {
-  if(req.session.uname && uname_re.test(req.session.uname) && req.params.plan && req.params.lat && req.params.long && validator.isDecimal(req.params.lat) && validator.isDecimal(req.params.long)) {
+router.get('/food/:plan', function(req, res) {
+  if(req.session.uname && uname_re.test(req.session.uname) && req.params.plan && req.session.location && req.session.location.latitude && req.session.location.longitude && validator.isDecimal(req.session.location.latitude) && validator.isDecimal(req.session.location.longitude)) {
     let req_path = 'https://maps.googleapis.com';
     req_path += '/maps/api/place/nearbysearch/json?';
     req_path += 'key='+api_settings.google_key;
-    req_path += '&location='+req.params.lat+','+req.params.long;
-    if (req.params.plan == 'find') {
+    req_path += '&location='+req.session.location.latitude+','+req.session.location.longitude;
+    if (req.params.plan === 'find') {
       req_path += '&radius=5000';
       req_path += '&type=restaurant';
     }
-    else if (req.params.plan == 'order') {
+    else if (req.params.plan === 'order') {
       req_path += '&radius=15000';
       req_path += '&type=meal_delivery';
     }
@@ -71,12 +71,12 @@ router.get('/food/:plan/:lat/:long', function(req, res) {
   }
 });
 
-router.get('/shopping/:lat/:long', function(req, res) {
-  if(req.session.uname && uname_re.test(req.session.uname) && req.params.lat && req.params.long && validator.isDecimal(req.params.lat) && validator.isDecimal(req.params.long)) {
+router.get('/shopping', function(req, res) {
+  if(req.session.uname && uname_re.test(req.session.uname) && req.session.location.latitude && req.session.location.longitude && validator.isDecimal(req.session.location.latitude) && validator.isDecimal(req.session.location.longitude)) {
     let req_path = 'https://maps.googleapis.com';
     req_path += '/maps/api/place/nearbysearch/json?';
     req_path += 'key='+api_settings.google_key;
-    req_path += '&location='+req.params.lat+','+req.params.long;
+    req_path += '&location='+req.session.location.latitude+','+req.session.location.longitude;
     req_path += '&radius=15000';
     req_path += '&type=clothing_store';
     req_path += '&opennow';

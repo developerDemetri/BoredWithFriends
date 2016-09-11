@@ -112,7 +112,7 @@ function shortenName(name) {
 function findFood() {
   $('#explore-options').addClass("hide");
   $('#find-food').removeClass("hide");
-  var find_food_url = getServer()+'/suggestions/food/find/'+loc.lat+'/'+loc.long;
+  var find_food_url = getServer()+'/suggestions/food/find';
   $.get(find_food_url).done(function(data) {
     for (var i = 0; i < data.places.length; i++) {
       var card = '';
@@ -133,7 +133,7 @@ function findFood() {
 function orderFood() {
   $('#home-options').addClass("hide");
   $('#order-food').removeClass("hide");
-  var order_food_url = getServer()+'/suggestions/food/order/'+loc.lat+'/'+loc.long;
+  var order_food_url = getServer()+'/suggestions/food/order';
   $.get(order_food_url).done(function(data) {
     for (var i = 0; i < data.places.length; i++) {
       var card = '';
@@ -213,7 +213,7 @@ function closeTerms() {
 function goShopping() {
   $('#explore-options').addClass("hide");
   $('#go-shopping').removeClass("hide");
-  var go_shopping_url = getServer()+'/suggestions/shopping/'+loc.lat+'/'+loc.long;
+  var go_shopping_url = getServer()+'/suggestions/shopping';
   $.get(go_shopping_url).done(function(data) {
     for (var i = 0; i < data.places.length; i++) {
       var card = '';

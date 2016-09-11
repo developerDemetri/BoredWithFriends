@@ -12,7 +12,7 @@ let uname_re = /^(\w{3,63})$/;
 let router = express.Router();
 
 router.get('/', function(req, res) {
-  if(req.session.uname && uname_re.test(req.session.uname)) {
+  if(req.session.uname && (typeof req.session.uname) === 'string' && uname_re.test(req.session.uname)) {
     res.render('home');
   }
   else {
@@ -21,12 +21,15 @@ router.get('/', function(req, res) {
 });
 
 router.post('/submit', function(req, res) {
-  if (req.body.username && req.body.email && req.body.password) {
+  if (req.body.username && req.body.email && req.body.password && (typeof req.body.username) === 'string' && (typeof req.body.email) === 'string' &&  (typeof req.body.password) === 'string') {
     let pass_re = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9!@#$%^&*/._+-]{8,31})$/;
     if (validator.isEmail(req.body.email) && uname_re.test(req.body.username) && pass_re.test(req.body.password)) {
-      let username = req.body.username.toLowerCase();
-      let email = aes_tool.encrypt(req.body.email.toLowerCase());
-      let password = bcrypt.hashSync(req.body.password, 10);
+      let username = req.body.username + '';
+      username = username.toLowerCase();
+      let email = req.body.email + '';
+      email = aes_tool.encrypt(email.toLowerCase());
+      let password = req.body.password + '';
+      password = bcrypt.hashSync(password, 10);
       db_pool.connect(function(err, client, done) {
         if(err) {
           let result = {
@@ -77,8 +80,9 @@ router.post('/submit', function(req, res) {
 });
 
 router.post('/checkusername', function(req, res) {
-  if (req.body.username && uname_re.test(req.body.username)) {
-    let user = req.body.username.toLowerCase();
+  if (req.body.username && (typeof req.body.username) === 'string' && uname_re.test(req.body.username)) {
+    let user = req.body.username + '';
+    user = user.toLowerCase();
     db_pool.connect(function(err, client, done) {
       if(err) {
         let result = {
@@ -129,8 +133,9 @@ router.post('/checkusername', function(req, res) {
 });
 
 router.post('/checkemail', function(req, res) {
-  if (req.body.email && validator.isEmail(req.body.email)) {
-    let email = aes_tool.encrypt(req.body.email.toLowerCase());
+  if (req.body.email && (typeof req.body.email) === 'string' && validator.isEmail(req.body.email)) {
+    let email = req.body.email + '';
+    email = aes_tool.encrypt(email.toLowerCase());
     db_pool.connect(function(err, client, done) {
       if(err) {
         let result = {
