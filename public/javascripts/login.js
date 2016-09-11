@@ -1,4 +1,5 @@
 'use strict';
+
 function setup() {
   $(document).keypress(function(e){
     if (e.which == 13){

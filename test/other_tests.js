@@ -8,6 +8,7 @@ let chai = require('chai');
 let assert = chai.assert;
 let expect = chai.expect;
 let aes_tool = require('../bin/aes_tool');
+let pg_tool = require('../bin/pg_tool');
 let sinon = require('sinon');
 let request = require('supertest');
 let express = require('express');
@@ -17,8 +18,11 @@ let testing_config = require('../bin/secret_settings').testing_config;
 
 describe('AES Tool', function() {
   let test_text = 'woot woot';
+  let test_number = 808;
   let encrypted_text;
   let decrypted_text;
+  let encrypted_number;
+  let decrypted_number;
   it('Should encrypt text', function(done) {
     encrypted_text = aes_tool.encrypt(test_text);
     assert.isString(encrypted_text, 'encrypted text');
@@ -29,8 +33,111 @@ describe('AES Tool', function() {
     decrypted_text = aes_tool.decrypt(encrypted_text);
     assert.isString(decrypted_text, 'decrypted text');
     assert.notEqual(decrypted_text, encrypted_text, 'decrypted text');
-    assert.equal(decrypted_text, test_text, 'decrypted text');
+    assert.strictEqual(decrypted_text, test_text, 'decrypted text');
     done();
+  });
+  it('Should encrypt numbers', function(done) {
+    encrypted_number = aes_tool.encrypt(test_number);
+    assert.isString(encrypted_number, 'encrypted number');
+    assert.notEqual(test_number, encrypted_number, 'encrypted number');
+    done();
+  });
+  it('Should correctly decrypt encrypted numbers', function(done) {
+    decrypted_number = aes_tool.decrypt(encrypted_number);
+    assert.isString(decrypted_number, 'decrypted number');
+    assert.notEqual(decrypted_number, encrypted_number, 'decrypted number');
+    decrypted_number = Number(decrypted_number);
+    assert.isNumber(decrypted_number, 'decrypted number');
+    assert.strictEqual(decrypted_number, test_number, 'decrypted number');
+    done();
+  });
+  it('Should not encrypt null values', function(done) {
+    let bad_result = aes_tool.encrypt(null);
+    assert.isNull(bad_result, 'null encrytpion');
+    done();
+  });
+  it('Should not decrypt null values', function(done) {
+    let bad_result = aes_tool.decrypt(null);
+    assert.isNull(bad_result, 'null decryption');
+    done();
+  });
+  it('Should not encrypt objects', function(done) {
+    let bad_result = aes_tool.encrypt({
+      'test': 'hi',
+      'derp': 'rawr'
+    });
+    assert.isNull(bad_result, 'object encrytpion');
+    done();
+  });
+  it('Should not decrypt objects', function(done) {
+    let bad_result = aes_tool.decrypt({
+      'test': 'hi',
+      'derp': 'rawr'
+    });
+    assert.isNull(bad_result, 'object decryption');
+    done();
+  });
+});
+
+describe('PG Tool', function() {
+  it('Should require all parameters', function(done) {
+    let query = '';
+    let params = [];
+    let callback = null;
+    let response = pg_tool.query(query, params, callback);
+    assert.isNotNull(response);
+    assert.equal(response.error, 'Invalid usage of DB_Tool', 'valid usage of db tool');
+    assert.isNull(response.rows);
+    done();
+  });
+  it('Should require valid querystring', function(done) {
+    let query = 5;
+    let params = [];
+    let callback = function(error, rows) {};
+    let response = pg_tool.query(query, params, callback);
+    assert.isNotNull(response);
+    assert.equal(response.error, 'Invalid usage of DB_Tool', 'valid usage of db tool');
+    assert.isNull(response.rows);
+    done();
+  });
+  it('Should require valid params', function(done) {
+    let query = 'SELECT COUNT(username) FROM public.bwf_user';
+    let params = 'hi';
+    let callback = function(error, rows) {};
+    let response = pg_tool.query(query, params, callback);
+    assert.isNotNull(response);
+    assert.equal(response.error, 'Invalid usage of DB_Tool', 'valid usage of db tool');
+    assert.isNull(response.rows);
+    done();
+  });
+  it('Should require valid callback', function(done) {
+    let query = 'SELECT COUNT(username) FROM public.bwf_user';
+    let params = [];
+    let callback = 'stuff';
+    let response = pg_tool.query(query, params, callback);
+    assert.isNotNull(response);
+    assert.equal(response.error, 'Invalid usage of DB_Tool', 'valid usage of db tool');
+    assert.isNull(response.rows);
+    done();
+  });
+  it('Should not execute invalid query', function(done) {
+    let query = 'SELECT derp FROM stuff';
+    let params = [];
+    pg_tool.query(query, params, function(error, rows) {
+      assert.isNotNull(error);
+      assert.isNull(rows);
+      assert.equal(error, 'error querying database', 'bad query');
+      done();
+    });
+  });
+  it('Should execute valid query', function(done) {
+    let query = 'SELECT COUNT(username) FROM public.bwf_user';
+    let params = [];
+    pg_tool.query(query, params, function(error, rows) {
+      assert.isNotNull(rows);
+      assert.isNull(error);
+      done();
+    });
   });
 });
 
@@ -120,3 +227,19 @@ describe('Views', function() {
       });
   });
 });
+
+/*
+Copyright 2016 DeveloperDemetri
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
