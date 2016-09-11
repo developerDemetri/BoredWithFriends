@@ -15,11 +15,29 @@
           </div>
           <div id="geoError" class="red-text center-align hide">
             <h1>GPS/Location Is Not Enabled <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></h1>
-            <h2><a href="/">Please enable, then click here to retry <i class="fa fa-refresh" aria-hidden="true"></i></a></h2>
+            <h5><a href="/">Please enable, then click here to retry <i class="fa fa-refresh" aria-hidden="true"></i></a></h5>
           </div>
           <div id="geo_issue_reload" class="red-text center-align hide">
-            <h1>Issue Loading Location <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></h1>
-            <h2><a href="/">Please check GPS connection, then click here to retry <i class="fa fa-refresh" aria-hidden="true"></i></a></h2>
+            <h3>Issue Loading Location <i class="fa fa-exclamation-triangle" aria-hidden="true"></i></h3>
+            <h5><a href="/">Please check GPS connection and click here to retry <i class="fa fa-refresh" aria-hidden="true"></i></a></h5>
+            <h5>Or enter a location to use:</h5>
+            <div class="input-field col s10 m6 offset-m3 offset-s1 black-text">
+              <input id="customLocation" type="text" class="validate customInput" maxlength="255">
+              <label for="customLocation">Location</label>
+            </div>
+            <p id="customLocationError" class="hide">Invalid Location</p>
+            <a id="locationBtn" onclick="setCustomLocation();" class="waves-effect waves-light btn blue darken-4">Find</a>
+            <div id="customLocationLoadingCircle" class="preloader-wrapper small active hide">
+              <div class="spinner-layer spinner-green-only">
+                <div class="circle-clipper left">
+                  <div class="circle"></div>
+                </div><div class="gap-patch">
+                  <div class="circle"></div>
+                </div><div class="circle-clipper right">
+                  <div class="circle"></div>
+                </div>
+              </div>
+            </div>
           </div>
           <div id="explore-vs-home" class="row hide">
             <h2 class="center-align blue-grey-text text-darken-4 hide-on-small-only">What are you in the mood for?</h2>

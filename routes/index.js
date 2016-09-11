@@ -7,6 +7,8 @@ let bcrypt = require('bcrypt');
 let redis_tool = require('../bin/redis_tool');
 let session_tool = require('../bin/session_tool');
 let validator = require('validator');
+let request = require('request');
+let api_settings = require('../bin/secret_settings').api_settings;
 let uname_re = /^(\w{3,63})$/;
 
 let router = express.Router();
@@ -117,6 +119,70 @@ router.post('/location', function(req, res) {
       };
       res.send(result);
     }
+  }
+  else {
+    let result = {
+      "status": 401,
+      "message": 'no bueno...'
+    };
+    res.send(result);
+  }
+});
+
+router.post('/location/custom', function(req, res) {
+  let location_re = /^[^<>={}]{2,255}$/;
+  if(req.session.uname && (typeof req.session.uname) === 'string' && uname_re.test(req.session.uname) && req.body.address && (typeof req.body.address) === 'string' && location_re.test(req.body.address)) {
+    let location = req.body.address + '';
+    let req_path = 'https://maps.googleapis.com';
+    req_path += '/maps/api/geocode/json?';
+    req_path += 'key='+api_settings.google_key;
+    req_path += '&address='+location;
+    req_path = encodeURI(req_path);
+    request(req_path, function (error, response, body) {
+      if (!error) {
+        let data = JSON.parse(body);
+        if (data.results && data.results[0] && data.results[0].geometry && data.results[0].geometry.location && data.results[0].geometry.location.lat && data.results[0].geometry.location.lng) {
+          let lat = data.results[0].geometry.location.lat + '';
+          let long = data.results[0].geometry.location.lng + '';
+          if (validator.isDecimal(lat) && validator.isDecimal(long)) {
+            let r_key = req.session.uname + '-location';
+            let new_location = {
+              latitude: lat,
+              longitude: long
+            };
+            redis_tool.set(r_key, JSON.stringify(new_location), 'EX', 300);
+            req.session.location = new_location;
+            let result = {
+              "status": 200,
+              "message": 'custom location set'
+            };
+            res.send(result);
+          }
+          else {
+            let result = {
+              "status": 400,
+              "message": 'invalid custom location'
+            };
+            res.send(result);
+          }
+        }
+        else {
+          let result = {
+            "status": 400,
+            "message": 'invalid custom location'
+          };
+          res.send(result);
+        }
+      }
+      else {
+        let result = {
+          "status": 500,
+          "message": 'error setting custom location'
+        }
+        console.log(error);
+        res.send(result);
+      }
+    });
   }
   else {
     let result = {
