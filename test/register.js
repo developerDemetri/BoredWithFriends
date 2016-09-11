@@ -186,6 +186,18 @@ describe('Register and Delete', function() {
         if (err) done(err);
         assert.equal(res.body.status, 202, 'user deleted');
         assert.equal(res.body.message, 'user successfully deleted', 'user deleted');
+        cookies = null;
+        done();
+      });
+  });
+  it('Should not delete unauthenticated user account', function(done) {
+    request(app)
+      .delete('/account')
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 401, 'user not deleted');
+        assert.equal(res.body.message, 'no bueno...', 'user not deleted');
         done();
       });
   });

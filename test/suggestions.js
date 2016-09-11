@@ -11,7 +11,7 @@ let lat = 33.426734;
 let long = -111.931189;
 
 describe('Suggestions', function() {
-  it('Should not get nearby food suggestions when not logged in', function(done) {
+  it('Should not get nearby food suggestions when unauthenticated', function(done) {
     let req = request(app).get('/suggestions/food/find');
     req
       .expect('Content-Type', /json/)
@@ -22,7 +22,7 @@ describe('Suggestions', function() {
         done();
       });
   });
-  it('Should not get nearby shopping suggestions when not logged in', function(done) {
+  it('Should not get nearby shopping suggestions when unauthenticated', function(done) {
     let req = request(app).get('/suggestions/shopping');
     req
       .expect('Content-Type', /json/)
@@ -80,7 +80,7 @@ describe('Suggestions', function() {
         done();
       });
   });
-  it('Should get nearby shopping suggestions when logged in', function(done) {
+  it('Should get nearby shopping suggestions when authenticated', function(done) {
     let req = request(app).get('/suggestions/shopping');
     req.cookies = cookies;
     req
@@ -92,7 +92,7 @@ describe('Suggestions', function() {
         done();
       });
   });
-  it('Should get nearby food suggestions when logged in', function(done) {
+  it('Should get nearby food suggestions when authenticated', function(done) {
     let req = request(app).get('/suggestions/food/find');
     req.cookies = cookies;
     req
@@ -104,7 +104,7 @@ describe('Suggestions', function() {
         done();
       });
   });
-  it('Should get nearby delivery suggestions when logged in', function(done) {
+  it('Should get nearby delivery suggestions when authenticated', function(done) {
     let req = request(app).get('/suggestions/food/order');
     req.cookies = cookies;
     req
@@ -113,6 +113,19 @@ describe('Suggestions', function() {
         if (err) done(err);
         assert.equal(res.body.status, 200, 'got a list of delivery places');
         assert.isNotNull(res.body.places, 'got a list of delivery places');
+        done();
+      });
+  });
+  it('Should not get nearby uncategorized food suggestions when authenticated', function(done) {
+    let req = request(app).get('/suggestions/food/derp');
+    req.cookies = cookies;
+    req
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 400, 'did not get a list of food places');
+        assert.equal(res.body.message, 'Um...awkward....', 'did not get a list of food places');
+        assert.isUndefined(res.body.places, 'did not get a list of food places');
         done();
       });
   });
