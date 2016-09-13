@@ -12,7 +12,7 @@ function setup() {
   checkLocation(true);
   geoUpdater = setInterval(function() {
      checkLocation(false);
-  }, 10 * 1000);
+  }, 60 * 1000);
 }
 
 function setCustomLocation() {
@@ -65,7 +65,7 @@ function updateLocation(is_inital_load) {
     if (is_inital_load) {
       issueChecker = setInterval(function() {
          kill_loading();
-      }, 20 * 1000);
+      }, 10 * 1000);
     }
     navigator.geolocation.getCurrentPosition(function(position) {
       clearInterval(issueChecker);
@@ -130,6 +130,7 @@ function saveLocation(lat, long) {
     success: function(data) {
       if(data.status === 200) {
         console.log('successfully updated location');
+        console.log(data.location);
       }
       else {
         console.log('issue updating location');

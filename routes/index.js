@@ -99,18 +99,48 @@ router.post('/location', function(req, res) {
     let lat = req.body.lat + '';
     let long = req.body.long + '';
     if (validator.isDecimal(lat) && validator.isDecimal(long)) {
-      let r_key = req.session.uname + '-location';
-      let new_location = {
-        latitude: lat,
-        longitude: long
-      };
-      redis_tool.set(r_key, JSON.stringify(new_location), 'EX', 180);
-      req.session.location = new_location;
-      let result = {
-        "status": 200,
-        "message": 'location updated'
-      };
-      res.send(result);
+      let req_path = 'https://maps.googleapis.com';
+      req_path += '/maps/api/geocode/json?';
+      req_path += 'key='+api_settings.google_key;
+      req_path += '&latlng='+lat+','+long;
+      request(req_path, function (error, response, body) {
+        if (!error) {
+          let data = JSON.parse(body);
+          if (data.results && data.results[0] && data.results[0].formatted_address) {
+            let location = data.results[0].formatted_address + '';
+            let r_key = req.session.uname + '-location';
+            let new_location = {
+              latitude: lat,
+              longitude: long,
+              location: location
+            };
+            redis_tool.set(r_key, JSON.stringify(new_location), 'EX', 180);
+            req.session.location = new_location;
+            let result = {
+              "status": 202,
+              "message": 'location updated',
+              "location": req.session.location.location
+            };
+            res.send(result);
+          }
+          else {
+            let result = {
+              "status": 500,
+              "message": 'error setting location',
+              "actual": data
+            }
+            res.send(result);
+          }
+        }
+        else {
+          let result = {
+            "status": 500,
+            "message": 'error setting location'
+          }
+          console.log(error);
+          res.send(result);
+        }
+      });
     }
     else {
       let result = {
@@ -132,29 +162,32 @@ router.post('/location', function(req, res) {
 router.post('/location/custom', function(req, res) {
   let location_re = /^[^<>={}]{2,255}$/;
   if(req.session.uname && (typeof req.session.uname) === 'string' && uname_re.test(req.session.uname) && req.body.address && (typeof req.body.address) === 'string' && location_re.test(req.body.address)) {
-    let location = req.body.address + '';
+    let custom_location = req.body.address + '';
     let req_path = 'https://maps.googleapis.com';
     req_path += '/maps/api/geocode/json?';
     req_path += 'key='+api_settings.google_key;
-    req_path += '&address='+location;
+    req_path += '&address='+custom_location;
     req_path = encodeURI(req_path);
     request(req_path, function (error, response, body) {
       if (!error) {
         let data = JSON.parse(body);
-        if (data.results && data.results[0] && data.results[0].geometry && data.results[0].geometry.location && data.results[0].geometry.location.lat && data.results[0].geometry.location.lng) {
+        if (data.results && data.results[0] && data.results[0].geometry && data.results[0].geometry.location && data.results[0].geometry.location.lat && data.results[0].geometry.location.lng && data.results[0].formatted_address) {
           let lat = data.results[0].geometry.location.lat + '';
           let long = data.results[0].geometry.location.lng + '';
+          let location = data.results[0].formatted_address + '';
           if (validator.isDecimal(lat) && validator.isDecimal(long)) {
             let r_key = req.session.uname + '-location';
             let new_location = {
               latitude: lat,
-              longitude: long
+              longitude: long,
+              location: location
             };
             redis_tool.set(r_key, JSON.stringify(new_location), 'EX', 300);
             req.session.location = new_location;
             let result = {
               "status": 202,
-              "message": 'custom location set'
+              "message": 'custom location set',
+              "location": req.session.location.location
             };
             res.send(result);
           }

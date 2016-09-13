@@ -61,8 +61,9 @@ describe('Suggestions', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'location updated');
+        assert.equal(res.body.status, 202, 'location updated');
         assert.equal(res.body.message, 'location updated', 'location updated');
+        assert.isNotNull(res.body.location, 'location updated', 'location updated');
         done();
       });
   });

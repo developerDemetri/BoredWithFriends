@@ -214,8 +214,9 @@ describe('Location', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'location updated');
+        assert.equal(res.body.status, 202, 'location updated');
         assert.equal(res.body.message, 'location updated', 'location updated');
+        assert.isNotNull(res.body.location, 'location updated')
         done();
       });
   });
@@ -230,6 +231,7 @@ describe('Location', function() {
         assert.isNotNull(res.body.location, 'location retreived')
         assert.equal(res.body.location.latitude, lat, 'latitude retreived');
         assert.equal(res.body.location.longitude, long, 'longitude retreived');
+        assert.isNotNull(res.body.location.location, 'location retreived')
         done();
       });
   });
@@ -275,6 +277,7 @@ describe('Location', function() {
         if (err) done(err);
         assert.equal(res.body.status, 202, 'valid custom location');
         assert.equal(res.body.message, 'custom location set', 'valid custom location');
+        assert.isNotNull(res.body.location, 'custom location returned', 'valid custom location')
         done();
       });
   });
