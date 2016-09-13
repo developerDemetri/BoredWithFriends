@@ -3,8 +3,8 @@
 let aes_config = require('./secret_settings').aes_config;
 
 let crypto = require('crypto');
-let algorithm = aes_config.algorithm;
-let password = aes_config.password;
+const algorithm = aes_config.algorithm;
+const password = aes_config.password;
 
 let aes_tool = {};
 

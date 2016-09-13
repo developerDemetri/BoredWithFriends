@@ -1,6 +1,6 @@
 {
   "name": "BoredWithFriends",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "private": true,
   "description": "Fun little responsive app to help indecisive friend groups",
   "scripts": {
@@ -21,7 +21,8 @@
     "pg": "^6.0.3",
     "request": "^2.74.0",
     "session-file-store": "^0.2.0",
-    "validator": "^5.5.0"
+    "validator": "^5.5.0",
+    "yelp": "^1.0.1"
   },
   "devDependencies": {
     "supertest": "^2.0.0",

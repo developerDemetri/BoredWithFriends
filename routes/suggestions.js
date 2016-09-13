@@ -9,7 +9,8 @@ let session_tool = require('../bin/session_tool');
 let api_settings = require('../bin/secret_settings').api_settings;
 let request = require('request');
 let validator = require('validator');
-let uname_re = /^(\w{3,63})$/;
+let yelp_tool = require('../bin/yelp_tool');
+const uname_re = /^(\w{3,63})$/;
 
 let router = express.Router();
 

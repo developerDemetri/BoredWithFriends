@@ -23,6 +23,11 @@ let test_user;
 let test_pass;
 let test_email;
 
+let yelp_token;
+let yelp_token_secret;
+let yelp_consumer_key;
+let yelp_consumer_secret;
+
 
 if (process.env.im_live) {
   console.log('loading prod settings..');
@@ -43,6 +48,10 @@ if (process.env.im_live) {
   test_user = process.env.test_user;
   test_pass = process.env.test_pass;
   test_email = process.env.test_email;
+  yelp_token = process.env.yelp_token;
+  yelp_token_secret = process.env.yelp_token_secret;
+  yelp_consumer_key = process.env.yelp_consumer_key;
+  yelp_consumer_secret = process.env.yelp_consumer_secret;
 }
 else {
   console.log('loading local settings..');
@@ -64,6 +73,10 @@ else {
   test_user = local_settings.test_user;
   test_pass = local_settings.test_pass;
   test_email = local_settings.test_email;
+  yelp_token = local_settings.yelp_token;
+  yelp_token_secret = local_settings.yelp_token_secret;
+  yelp_consumer_key = local_settings.yelp_consumer_key;
+  yelp_consumer_secret = local_settings.yelp_consumer_secret;
 }
 
 let db_config = {
@@ -87,7 +100,13 @@ let session_config = {
 };
 
 let api_settings = {
-  google_key: google_key
+  google_key: google_key,
+  yelp_config: {
+    token: yelp_token,
+    token_secret: yelp_token_secret,
+    consumer_key: yelp_consumer_key,
+    consumer_secret: yelp_consumer_secret
+  }
 };
 
 let redis_config = {

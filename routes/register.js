@@ -7,7 +7,7 @@ let aes_tool = require('../bin/aes_tool');
 let redis_tool = require('../bin/redis_tool');
 let session_tool = require('../bin/session_tool');
 let validator = require('validator');
-let uname_re = /^(\w{3,63})$/;
+const uname_re = /^(\w{3,63})$/;
 
 let router = express.Router();
 
