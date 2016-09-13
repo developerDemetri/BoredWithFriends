@@ -126,8 +126,7 @@ router.post('/location', function(req, res) {
           else {
             let result = {
               "status": 500,
-              "message": 'error setting location',
-              "actual": data
+              "message": 'error setting location'
             }
             res.send(result);
           }

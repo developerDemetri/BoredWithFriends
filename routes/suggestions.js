@@ -15,18 +15,16 @@ const uname_re = /^(\w{3,63})$/;
 let router = express.Router();
 
 router.get('/food/:plan', function(req, res) {
-  if(req.session.uname && uname_re.test(req.session.uname) && req.params.plan && req.session.location && req.session.location.latitude && req.session.location.longitude && validator.isDecimal(req.session.location.latitude) && validator.isDecimal(req.session.location.longitude)) {
-    let req_path = 'https://maps.googleapis.com';
-    req_path += '/maps/api/place/nearbysearch/json?';
-    req_path += 'key='+api_settings.google_key;
-    req_path += '&location='+req.session.location.latitude+','+req.session.location.longitude;
+  if (req.session.uname && uname_re.test(req.session.uname) && req.params.plan && req.session.location && req.session.location.latitude && req.session.location.longitude && validator.isDecimal(req.session.location.latitude) && validator.isDecimal(req.session.location.longitude) && req.session.location.location) {
+    let category;
+    let radius;
     if (req.params.plan === 'find') {
-      req_path += '&radius=5000';
-      req_path += '&type=restaurant';
+      category = 'restaurants';
+      radius = 8000;
     }
     else if (req.params.plan === 'order') {
-      req_path += '&radius=15000';
-      req_path += '&type=meal_delivery';
+      category = 'fooddeliveryservices';
+      radius = 15000;
     }
     else {
       let result = {
@@ -35,32 +33,39 @@ router.get('/food/:plan', function(req, res) {
       };
       res.send(result);
     }
-    req_path += '&opennow';
-    request(req_path, function (error, response, body) {
-      if (!error) {
-        let places = [];
-        let data = JSON.parse(body);
-        for (let i = 0; i < data.results.length; i++) {
+    yelp_tool.search({
+       location: req.session.location.location,
+       cll: req.session.location.latitude+','+req.session.location.longitude,
+       radius_filter: radius,
+       sort: 2,
+       category_filter: category
+     })
+    .then(function (data) {
+      let places = [];
+      for (let i = 0; places.length < 20 && i < data.businesses.length; i++) {
+        if (!data.businesses[i].is_closed) {
           let place = {
-            id: data.results[i].place_id,
-            name: data.results[i].name,
-            rating: data.results[i].rating
+            name: data.businesses[i].name,
+            rating: data.businesses[i].rating,
+            phone: data.businesses[i].display_phone,
+            address: data.businesses[i].location.display_address,
+            distance: data.businesses[i].distance
           };
           places.push(place);
         }
-        let result = {
-          "status": 200,
-          "places": places
-        }
-        res.send(result);
       }
-      else {
-        let result = {
-          "status": 500,
-          "message": error
-        }
-        res.send(result);
-      }
+      let result = {
+        "status": 200,
+        "places": places
+      };
+      res.send(result);
+    })
+    .catch(function (err) {
+      let result = {
+        "status": 500,
+        "error": 'error retreiving yelp results'
+      };
+      res.send(result);
     });
   }
   else {
@@ -73,39 +78,40 @@ router.get('/food/:plan', function(req, res) {
 });
 
 router.get('/shopping', function(req, res) {
-  if(req.session.uname && uname_re.test(req.session.uname) && req.session.location.latitude && req.session.location.longitude && validator.isDecimal(req.session.location.latitude) && validator.isDecimal(req.session.location.longitude)) {
-    let req_path = 'https://maps.googleapis.com';
-    req_path += '/maps/api/place/nearbysearch/json?';
-    req_path += 'key='+api_settings.google_key;
-    req_path += '&location='+req.session.location.latitude+','+req.session.location.longitude;
-    req_path += '&radius=15000';
-    req_path += '&type=clothing_store';
-    req_path += '&opennow';
-    request(req_path, function (error, response, body) {
-      if (!error) {
-        let places = [];
-        let data = JSON.parse(body);
-        for (let i = 0; i < data.results.length; i++) {
+  if (req.session.uname && uname_re.test(req.session.uname) && req.session.location.latitude && req.session.location.longitude && validator.isDecimal(req.session.location.latitude) && validator.isDecimal(req.session.location.longitude) && req.session.location.location) {
+    yelp_tool.search({
+       location: req.session.location.location,
+       cll: req.session.location.latitude+','+req.session.location.longitude,
+       radius_filter: 15000,
+       sort: 2,
+       category_filter: 'fashion'
+     })
+    .then(function (data) {
+      let places = [];
+      for (let i = 0; places.length < 20 && i < data.businesses.length; i++) {
+        if (!data.businesses[i].is_closed) {
           let place = {
-            id: data.results[i].place_id,
-            name: data.results[i].name,
-            rating: data.results[i].rating
+            name: data.businesses[i].name,
+            rating: data.businesses[i].rating,
+            phone: data.businesses[i].display_phone,
+            address: data.businesses[i].location.display_address,
+            distance: data.businesses[i].distance
           };
           places.push(place);
         }
-        let result = {
-          "status": 200,
-          "places": places
-        }
-        res.send(result);
       }
-      else {
-        let result = {
-          "status": 500,
-          "message": error
-        }
-        res.send(result);
-      }
+      let result = {
+        "status": 200,
+        "places": places
+      };
+      res.send(result);
+    })
+    .catch(function (err) {
+      let result = {
+        "status": 500,
+        "error": 'error retreiving yelp results'
+      };
+      res.send(result);
     });
   }
   else {
@@ -115,31 +121,6 @@ router.get('/shopping', function(req, res) {
     };
     res.send(result);
   }
-});
-
-router.get('/yelp', function(req, res) {
-  yelp_tool.search({
-     location: 'Tempe',
-     cll: req.session.location.latitude+','+req.session.location.longitude,
-     radius_filter: 1000,
-     limit: 20,
-     sort: 2,
-     category_filter: 'restaurants'
-   })
-  .then(function (data) {
-    let result = {
-      "status": 200,
-      "data": data
-    };
-    res.send(result);
-  })
-  .catch(function (err) {
-    let result = {
-      "status": 500,
-      "error": err
-    };
-    res.send(result);
-  });
 });
 
 module.exports = router;

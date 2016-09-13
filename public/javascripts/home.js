@@ -128,9 +128,8 @@ function saveLocation(lat, long) {
     url: url,
     data: data,
     success: function(data) {
-      if(data.status === 200) {
+      if(data.status === 202) {
         console.log('successfully updated location');
-        console.log(data.location);
       }
       else {
         console.log('issue updating location');
