@@ -117,6 +117,31 @@ router.get('/shopping', function(req, res) {
   }
 });
 
+router.get('/yelp', function(req, res) {
+  yelp_tool.search({
+     location: 'Tempe',
+     cll: req.session.location.latitude+','+req.session.location.longitude,
+     radius_filter: 1000,
+     limit: 20,
+     sort: 2,
+     category_filter: 'restaurants'
+   })
+  .then(function (data) {
+    let result = {
+      "status": 200,
+      "data": data
+    };
+    res.send(result);
+  })
+  .catch(function (err) {
+    let result = {
+      "status": 500,
+      "error": err
+    };
+    res.send(result);
+  });
+});
+
 module.exports = router;
 
 /*
