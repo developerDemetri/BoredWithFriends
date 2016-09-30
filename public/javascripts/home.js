@@ -223,20 +223,25 @@ function backToHomeOptions() {
 
 function starify(rating) {
   var stars = '';
-  if(isNaN(rating)) {
-    return stars;
+  if (isNaN(rating)) {
+    return;
   }
-  for (var i = 0; i < 5; i++) {
-    if (rating >= 1) {
-      stars += '<i class="fa fa-star" aria-hidden="true"></i>';
-    }
-    else if (rating >= .5) {
-      stars += '<i class="fa fa-star-half-o" aria-hidden="true"></i>';
-    }
-    else {
-      stars += '<i class="fa fa-star-o" aria-hidden="true"></i>';
-    }
-    rating--;
+  if (rating < 1) {
+    rating = 0;
+  }
+  var partial = false;
+  if (rating % 1 != 0) {
+    var partial = true;
+    rating = Math.floor(rating);
+  }
+  for (var i = 0; i < 4; i++) {
+    stars += '<img class="yelp-star" src="images/yelp/'+rating+'.png"/>';
+  }
+  if (partial) {
+    stars += '<img class="yelp-star" src="images/yelp/'+rating+'.5.png"/>';
+  }
+  else {
+    stars += '<img class="yelp-star" src="images/yelp/'+rating+'.png"/>';
   }
   return stars;
 }
