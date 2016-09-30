@@ -15,15 +15,16 @@ pg_tool.query = function(querystring, params, callback) {
     let rows = null;
     db_pool.connect(function(err, client, done) {
       if (err) {
-        console.log('error connecting to database: ', err)
-        error = 'error connecting to database';
+        console.log('Error Connecting to Database: ', err)
+        error = 'Error Connecting to Database';
         callback(error, rows);
       }
       else {
         client.query(querystring, params, function(err, result) {
           done();
           if (err) {
-            error = 'error querying database',
+            console.log('Error Querying Database: ', err)
+            error = 'Error Querying Database',
             callback(error, rows);
           }
           else {
@@ -35,9 +36,9 @@ pg_tool.query = function(querystring, params, callback) {
     });
   }
   else {
-    console.log("invalid usage of db tool");
+    console.log("Invalid Usage of DB Tool");
     let result = {
-      error: 'Invalid usage of DB_Tool',
+      error: 'Invalid Usage of DB Tool',
       rows: null
     }
     return result;

@@ -31,7 +31,7 @@ function setCustomLocation() {
         address: address
       },
       success: function(data) {
-        if (data.status === 202) {
+        if (data.status === 200) {
           console.log('successfully set custom location');
           $('#geo_issue_reload').addClass("hide");
           $('#explore-vs-home').removeClass("hide");
@@ -119,8 +119,8 @@ function checkLocation(is_inital_load) {
 function saveLocation(lat, long) {
   console.log('updating location...');
   var data = {
-    lat: lat,
-    long: long
+    lat: Number(lat),
+    long: Number(long)
   };
   var url = getServer()+'/location';
   $.ajax({
@@ -128,10 +128,11 @@ function saveLocation(lat, long) {
     url: url,
     data: data,
     success: function(data) {
-      if(data.status === 202) {
+      if (data.status === 200) {
         console.log('successfully updated location');
       }
       else {
+        console.log(data)
         console.log('issue updating location');
       }
     }
@@ -287,11 +288,11 @@ function logout() {
     url: url,
     data: null,
     success: function(data) {
-      if(data.status == 200) {
+      if(data.status === 200) {
         var tempUrl = getServer()+'/';
         window.location.replace(tempUrl);
       }
-      else if (data.status == 400) {
+      else if (data.status === 400) {
         console.log("couldn't log out");
       }
       else {

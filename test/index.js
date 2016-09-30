@@ -21,8 +21,8 @@ describe('Log In', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 400, 'bad login');
-        assert.equal(res.body.message, 'bad login', 'bad login');
+        assert.equal(res.body.status, 400, 'Invalid Username/Password');
+        assert.equal(res.body.message, 'Invalid Username/Password', 'Invalid Username/Password');
         done();
       });
   });
@@ -36,8 +36,8 @@ describe('Log In', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 400, 'bad login');
-        assert.equal(res.body.message, 'bad login', 'bad login');
+        assert.equal(res.body.status, 400, 'Invalid Username/Password');
+        assert.equal(res.body.message, 'Invalid Username/Password', 'Invalid Username/Password');
         done();
       });
   });
@@ -51,8 +51,8 @@ describe('Log In', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 400, 'bad login');
-        assert.equal(res.body.message, 'bad login', 'bad login');
+        assert.equal(res.body.status, 400, 'Invalid Username/Password');
+        assert.equal(res.body.message, 'Invalid Username/Password', 'Invalid Username/Password');
         done();
       });
   });
@@ -66,8 +66,8 @@ describe('Log In', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 400, 'bad login');
-        assert.equal(res.body.message, 'bad login', 'bad login');
+        assert.equal(res.body.status, 400, 'Invalid Username/Password');
+        assert.equal(res.body.message, 'Invalid Username/Password', 'Invalid Username/Password');
         done();
       });
   });
@@ -81,8 +81,8 @@ describe('Log In', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'invalid login');
-        assert.equal(res.body.message, 'invalid login', 'invalid login');
+        assert.equal(res.body.status, 200, 'Invalid Username/Password');
+        assert.equal(res.body.message, 'Invalid Username/Password', 'Invalid Username/Password');
         done();
       });
   });
@@ -97,8 +97,8 @@ describe('Log In', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'valid login');
-        assert.equal(res.body.message, 'successful login', 'successful login');
+        assert.equal(res.body.status, 200, 'Valid Login');
+        assert.equal(res.body.message, 'Successful Login', 'Successful Login');
         cookies = res.headers['set-cookie'].pop().split(';')[0];
         done();
       });
@@ -109,8 +109,8 @@ describe('Log In', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 400, 'unsuccessful logout');
-        assert.equal(res.body.message, 'no session to log out of...', 'no session to log out of...');
+        assert.equal(res.body.status, 401, 'Unsuccessful Logout');
+        assert.equal(res.body.message, 'Unauthorized Request', 'Unauthorized Request');
         done();
       });
   });
@@ -121,8 +121,8 @@ describe('Log In', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'successful logout');
-        assert.equal(res.body.message, 'successful logout', 'successful logout');
+        assert.equal(res.body.status, 200, 'Successful Logout');
+        assert.equal(res.body.message, 'Successful Logout', 'Successful Logout');
         cookies = null;
         done();
       });
@@ -140,8 +140,8 @@ describe('Location', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 401, 'location not updated');
-        assert.equal(res.body.message, 'no bueno...', 'location not updated');
+        assert.equal(res.body.status, 401, 'Location Not Updated');
+        assert.equal(res.body.message, 'Unauthorized Request', 'Location Not Updated');
         done();
       });
   });
@@ -151,8 +151,8 @@ describe('Location', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 401, 'location denied');
-        assert.equal(res.body.message, 'no bueno...', 'location denied');
+        assert.equal(res.body.status, 401, 'Location Denied');
+        assert.equal(res.body.message, 'Unauthorized Request', 'Location Denied');
         done();
       });
   });
@@ -165,8 +165,8 @@ describe('Location', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 401, 'custom location denied');
-        assert.equal(res.body.message, 'no bueno...', 'location denied');
+        assert.equal(res.body.status, 401, 'Custom Location Denied');
+        assert.equal(res.body.message, 'Unauthorized Request', 'Location Denied');
         done();
       });
   });
@@ -181,8 +181,8 @@ describe('Location', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'valid login');
-        assert.equal(res.body.message, 'successful login', 'successful login');
+        assert.equal(res.body.status, 200, 'Valid Login');
+        assert.equal(res.body.message, 'Successful Login', 'Successful Login');
         cookies = res.headers['set-cookie'].pop().split(';')[0];
         done();
       });
@@ -198,8 +198,8 @@ describe('Location', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 400, 'invalid location');
-        assert.equal(res.body.message, 'invalid coordinates', 'invalid location');
+        assert.equal(res.body.status, 400, 'Invalid Location');
+        assert.equal(res.body.message, 'Invalid Location', 'Invalid location');
         done();
       });
   });
@@ -214,9 +214,9 @@ describe('Location', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 202, 'location updated');
-        assert.equal(res.body.message, 'location updated', 'location updated');
-        assert.isNotNull(res.body.location, 'location updated')
+        assert.equal(res.body.status, 200, 'Location Updated');
+        assert.equal(res.body.message, 'Location Updated', 'Location Updated');
+        assert.isNotNull(res.body.location, 'Location Updated')
         done();
       });
   });
@@ -227,11 +227,11 @@ describe('Location', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'location retreived');
-        assert.isNotNull(res.body.location, 'location retreived')
-        assert.equal(res.body.location.latitude, lat, 'latitude retreived');
-        assert.equal(res.body.location.longitude, long, 'longitude retreived');
-        assert.isNotNull(res.body.location.location, 'location retreived')
+        assert.equal(res.body.status, 200, 'Location Retreived');
+        assert.isNotNull(res.body.location, 'Location Retreived')
+        assert.equal(res.body.location.latitude, lat, 'Latitude Retreived');
+        assert.equal(res.body.location.longitude, long, 'Longitude Retreived');
+        assert.isNotNull(res.body.location.location, 'Location Retreived')
         done();
       });
   });
@@ -245,8 +245,8 @@ describe('Location', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 400, 'invalid custom location');
-        assert.equal(res.body.message, 'invalid custom location', 'invalid custom location');
+        assert.equal(res.body.status, 400, 'Invalid Custom Location');
+        assert.equal(res.body.message, 'Invalid Custom Location', 'Invalid Custom Location');
         done();
       });
   });
@@ -260,8 +260,8 @@ describe('Location', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 401, 'custom location denied');
-        assert.equal(res.body.message, 'no bueno...', 'location denied');
+        assert.equal(res.body.status, 400, 'Custom Location Denied');
+        assert.equal(res.body.message, 'Invalid Custom Location', 'Location denied');
         done();
       });
   });
@@ -275,9 +275,9 @@ describe('Location', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 202, 'valid custom location');
-        assert.equal(res.body.message, 'custom location set', 'valid custom location');
-        assert.isNotNull(res.body.location, 'custom location returned', 'valid custom location')
+        assert.equal(res.body.status, 200, 'Valid Custom Location');
+        assert.equal(res.body.message, 'Custom Location Set', 'Valid Custom Location');
+        assert.isNotNull(res.body.location, 'Custom Location Returned', 'Valid Custom Location')
         done();
       });
   });
@@ -288,8 +288,8 @@ describe('Location', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'successful logout');
-        assert.equal(res.body.message, 'successful logout', 'successful logout');
+        assert.equal(res.body.status, 200, 'Successful Logout');
+        assert.equal(res.body.message, 'Successful Logout', 'Successful Logout');
         cookies = null;
         done();
       });

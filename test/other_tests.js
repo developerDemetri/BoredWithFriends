@@ -15,6 +15,7 @@ let express = require('express');
 let app = require('../app');
 let ejs = require('ejs');
 let testing_config = require('../bin/secret_settings').testing_config;
+let validator_tool = require('../bin/validator_tool.js');
 
 describe('AES Tool', function() {
   let test_text = 'woot woot';
@@ -86,7 +87,7 @@ describe('PG Tool', function() {
     let callback = null;
     let response = pg_tool.query(query, params, callback);
     assert.isNotNull(response);
-    assert.equal(response.error, 'Invalid usage of DB_Tool', 'valid usage of db tool');
+    assert.equal(response.error, 'Invalid Usage of DB Tool', 'Invalid Usage of DB Tool');
     assert.isNull(response.rows);
     done();
   });
@@ -96,7 +97,7 @@ describe('PG Tool', function() {
     let callback = function(error, rows) {};
     let response = pg_tool.query(query, params, callback);
     assert.isNotNull(response);
-    assert.equal(response.error, 'Invalid usage of DB_Tool', 'valid usage of db tool');
+    assert.equal(response.error, 'Invalid Usage of DB Tool', 'Invalid Usage of DB Tool');
     assert.isNull(response.rows);
     done();
   });
@@ -106,7 +107,7 @@ describe('PG Tool', function() {
     let callback = function(error, rows) {};
     let response = pg_tool.query(query, params, callback);
     assert.isNotNull(response);
-    assert.equal(response.error, 'Invalid usage of DB_Tool', 'valid usage of db tool');
+    assert.equal(response.error, 'Invalid Usage of DB Tool', 'Invalid Usage of DB Tool');
     assert.isNull(response.rows);
     done();
   });
@@ -116,7 +117,7 @@ describe('PG Tool', function() {
     let callback = 'stuff';
     let response = pg_tool.query(query, params, callback);
     assert.isNotNull(response);
-    assert.equal(response.error, 'Invalid usage of DB_Tool', 'valid usage of db tool');
+    assert.equal(response.error, 'Invalid Usage of DB Tool', 'Invalid Usage of DB Tool');
     assert.isNull(response.rows);
     done();
   });
@@ -126,7 +127,7 @@ describe('PG Tool', function() {
     pg_tool.query(query, params, function(error, rows) {
       assert.isNotNull(error);
       assert.isNull(rows);
-      assert.equal(error, 'error querying database', 'bad query');
+      assert.equal(error, 'Error Querying Database', 'Bad Query');
       done();
     });
   });
@@ -141,6 +142,82 @@ describe('PG Tool', function() {
   });
 });
 
+describe('Validator Tool', function() {
+  let test_re = /^(\w{5,25})$/;
+  it('Should not pass null strings', function(done) {
+    let input = null;
+    let result = validator_tool.checkInput(input, 'string', test_re);
+    assert.isFalse(result, 'Null String');
+    done();
+  });
+  it('Should not pass object strings', function(done) {
+    let input = {
+      code: 'super malware',
+      payload: '9sf98s7df987sd98f7ds9f8d'
+    };
+    let result = validator_tool.checkInput(input, 'string', test_re);
+    assert.isFalse(result, 'Object String');
+    done();
+  });
+  it('Should not pass invalid strings', function(done) {
+    let input = 'sdflkjdf<<executeCode()><>Sdf';
+    let result = validator_tool.checkInput(input, 'string', test_re);
+    assert.isFalse(result, 'Invalid String');
+    done();
+  });
+  it('Should pass valid strings', function(done) {
+    let input = 'Hell0World';
+    let result = validator_tool.checkInput(input, 'string', test_re);
+    assert.isNotFalse(result, 'Valid String');
+    done();
+  });
+  it('Should not pass null numbers', function(done) {
+    let input = null;
+    let result = validator_tool.checkInput(input, 'number', null);
+    assert.isFalse(result, 'Null Number');
+    done();
+  });
+  it('Should not pass object numbers', function(done) {
+    let input = {
+      code: 'super malware',
+      payload: '9sf98s7df987sd98f7ds9f8d'
+    };
+    let result = validator_tool.checkInput(input, 'number', null);
+    assert.isFalse(result, 'Object Number');
+    done();
+  });
+  it('Should pass valid numbers', function(done) {
+    let input = 404.404;
+    let result = validator_tool.checkInput(input, 'number', null);
+    assert.isNotFalse(result, 'Valid Number');
+    done();
+  });
+  it('Should not pass null locations', function(done) {
+    let location = null;
+    let result = validator_tool.checkCoordinates(location);
+    assert.isFalse(result, 'Null Location');
+    done();
+  });
+  it('Should not pass locations missing coordinates', function(done) {
+    let location = {
+      lat: 44.07,
+      lng: null
+    };
+    let result = validator_tool.checkCoordinates(location);
+    assert.isFalse(result, 'Null Coordinates');
+    done();
+  });
+  it('Should pass locations with valid coordinates', function(done) {
+    let location = {
+      lat: 44.07,
+      lng: 80.44
+    };
+    let result = validator_tool.checkCoordinates(location);
+    assert.isNotFalse(result, 'Valid Coordinates');
+    done();
+  });
+});
+
 describe('Views', function() {
   let spy = sinon.spy(ejs, '__express');
   it('Should return lost page when incorrect route is called', function(done) {
@@ -148,7 +225,7 @@ describe('Views', function() {
     .get('/derp')
     .end(function(err, res) {
       if (err) done(err);
-      assert.isNotNull(res.body, 'got lost page');
+      assert.isNotNull(res.body, 'Got Lost Page');
       expect(spy.calledWithMatch(/\/views\/lost\.ejs$/)).to.be.true;
       done();
     });
@@ -158,7 +235,7 @@ describe('Views', function() {
     .get('/')
     .end(function(err, res) {
       if (err) done(err);
-      assert.isNotNull(res.body, 'got login page');
+      assert.isNotNull(res.body, 'Got Login Page');
       expect(spy.calledWithMatch(/\/views\/home\.ejs$/)).to.be.false;
       expect(spy.calledWithMatch(/\/views\/login\.ejs$/)).to.be.true;
       done();
@@ -169,7 +246,7 @@ describe('Views', function() {
     .get('/register')
     .end(function(err, res) {
       if (err) done(err);
-      assert.isNotNull(res.body, 'got register page');
+      assert.isNotNull(res.body, 'Got Register Page');
       expect(spy.calledWithMatch(/\/views\/home\.ejs$/)).to.be.false;
       expect(spy.calledWithMatch(/\/views\/register\.ejs$/)).to.be.true;
       done();
@@ -186,8 +263,8 @@ describe('Views', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'valid login');
-        assert.equal(res.body.message, 'successful login', 'successful login');
+        assert.equal(res.body.status, 200, 'Valid Login');
+        assert.equal(res.body.message, 'Successful Login', 'Successful Login');
         cookies = res.headers['set-cookie'].pop().split(';')[0];
         done();
       });
@@ -197,7 +274,7 @@ describe('Views', function() {
     req.cookies = cookies;
     req.end(function(err, res) {
       if (err) done(err);
-      assert.isNotNull(res.body, 'got home page instead of login page');
+      assert.isNotNull(res.body, 'Got home page instead of Login page');
       expect(spy.calledWithMatch(/\/views\/home\.ejs$/)).to.be.true;
       done();
     });
@@ -207,7 +284,7 @@ describe('Views', function() {
     req.cookies = cookies;
     req.end(function(err, res) {
       if (err) done(err);
-      assert.isNotNull(res.body, 'got home page instead of register page');
+      assert.isNotNull(res.body, 'Got Home page instead of Register page');
       expect(spy.calledWithMatch(/\/views\/home\.ejs$/)).to.be.true;
       spy.restore();
       done();
@@ -220,8 +297,8 @@ describe('Views', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'successful logout');
-        assert.equal(res.body.message, 'successful logout', 'successful logout');
+        assert.equal(res.body.status, 200, 'Successful Logout');
+        assert.equal(res.body.message, 'Successful Logout', 'Successful Logout');
         cookies = null;
         done();
       });
