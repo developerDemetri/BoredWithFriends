@@ -17,8 +17,8 @@ describe('Suggestions', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 401, 'food request blocked');
-        assert.equal(res.body.message, 'no bueno...', 'food request blocked');
+        assert.equal(res.body.status, 401, 'Food request blocked');
+        assert.equal(res.body.message, 'Unauthorized Request', 'Food request blocked');
         done();
       });
   });
@@ -28,8 +28,8 @@ describe('Suggestions', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 401, 'shopping request blocked');
-        assert.equal(res.body.message, 'no bueno...', 'shopping request blocked');
+        assert.equal(res.body.status, 401, 'Shopping request blocked');
+        assert.equal(res.body.message, 'Unauthorized Request', 'Shopping request blocked');
         done();
       });
   });
@@ -44,8 +44,8 @@ describe('Suggestions', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'valid login');
-        assert.equal(res.body.message, 'successful login', 'successful login');
+        assert.equal(res.body.status, 200, 'Valid Login');
+        assert.equal(res.body.message, 'Successful Login', 'Successful Login');
         cookies = res.headers['set-cookie'].pop().split(';')[0];
         done();
       });
@@ -61,8 +61,9 @@ describe('Suggestions', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'location updated');
-        assert.equal(res.body.message, 'location updated', 'location updated');
+        assert.equal(res.body.status, 200, 'Location Updated');
+        assert.equal(res.body.message, 'Location Updated', 'Location Updated');
+        assert.isNotNull(res.body.location, 'Location Updated', 'Location Updated');
         done();
       });
   });
@@ -73,10 +74,10 @@ describe('Suggestions', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'location retreived');
-        assert.isNotNull(res.body.location, 'location retreived')
-        assert.equal(res.body.location.latitude, lat, 'latitude retreived');
-        assert.equal(res.body.location.longitude, long, 'longitude retreived');
+        assert.equal(res.body.status, 200, 'Location Retreived');
+        assert.isNotNull(res.body.location, 'Location Retreived')
+        assert.equal(res.body.location.latitude, lat, 'Latitude Retreived');
+        assert.equal(res.body.location.longitude, long, 'Longitude Retreived');
         done();
       });
   });
@@ -87,8 +88,8 @@ describe('Suggestions', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'got a list of shopping places');
-        assert.isNotNull(res.body.places, 'got a list of shopping places');
+        assert.equal(res.body.status, 200, 'Got a list of shopping places');
+        assert.isNotNull(res.body.places, 'Got a list of shopping places');
         done();
       });
   });
@@ -99,8 +100,8 @@ describe('Suggestions', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'got a list of food places');
-        assert.isNotNull(res.body.places, 'got a list of food places');
+        assert.equal(res.body.status, 200, 'Got a list of food places');
+        assert.isNotNull(res.body.places, 'Got a list of food places');
         done();
       });
   });
@@ -111,8 +112,8 @@ describe('Suggestions', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'got a list of delivery places');
-        assert.isNotNull(res.body.places, 'got a list of delivery places');
+        assert.equal(res.body.status, 200, 'Got a list of delivery places');
+        assert.isNotNull(res.body.places, 'Got a list of delivery places');
         done();
       });
   });
@@ -123,9 +124,22 @@ describe('Suggestions', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 400, 'did not get a list of food places');
-        assert.equal(res.body.message, 'Um...awkward....', 'did not get a list of food places');
-        assert.isUndefined(res.body.places, 'did not get a list of food places');
+        assert.equal(res.body.status, 400, 'Did not get a list of food places');
+        assert.equal(res.body.message, 'Invalid Plan', 'Did not get a list of food places');
+        assert.isUndefined(res.body.places, 'Did not get a list of food places');
+        done();
+      });
+  });
+  it('Should not get nearby uncategorized food suggestions when authenticated', function(done) {
+    let req = request(app).get('/suggestions/food/jljsdlkfjsdflkjsdflkjf');
+    req.cookies = cookies;
+    req
+      .expect('Content-Type', /json/)
+      .end(function(err, res) {
+        if (err) done(err);
+        assert.equal(res.body.status, 400, 'Did not get a list of food places');
+        assert.equal(res.body.message, 'Invalid Location and/or Plan', 'Did not get a list of food places');
+        assert.isUndefined(res.body.places, 'Did not get a list of food places');
         done();
       });
   });
@@ -136,8 +150,8 @@ describe('Suggestions', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 200, 'successful logout');
-        assert.equal(res.body.message, 'successful logout', 'successful logout');
+        assert.equal(res.body.status, 200, 'Successful Logout');
+        assert.equal(res.body.message, 'Successful Logout', 'Successful Logout');
         cookies = null;
         done();
       });

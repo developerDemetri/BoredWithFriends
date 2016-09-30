@@ -12,7 +12,7 @@ function setup() {
   checkLocation(true);
   geoUpdater = setInterval(function() {
      checkLocation(false);
-  }, 10 * 1000);
+  }, 60 * 1000);
 }
 
 function setCustomLocation() {
@@ -31,7 +31,7 @@ function setCustomLocation() {
         address: address
       },
       success: function(data) {
-        if (data.status === 202) {
+        if (data.status === 200) {
           console.log('successfully set custom location');
           $('#geo_issue_reload').addClass("hide");
           $('#explore-vs-home').removeClass("hide");
@@ -65,7 +65,7 @@ function updateLocation(is_inital_load) {
     if (is_inital_load) {
       issueChecker = setInterval(function() {
          kill_loading();
-      }, 20 * 1000);
+      }, 10 * 1000);
     }
     navigator.geolocation.getCurrentPosition(function(position) {
       clearInterval(issueChecker);
@@ -73,6 +73,7 @@ function updateLocation(is_inital_load) {
       loc.long = position.coords.longitude;
       saveLocation(loc.lat, loc.long);
       if (is_inital_load) {
+        $('#google-attribution').addClass("hide");
         $('#geoLoader').addClass("hide");
         $('#geoError').addClass("hide");
         $('#explore-vs-home').removeClass("hide");
@@ -95,6 +96,7 @@ function checkLocation(is_inital_load) {
         if (data.location) {
           loc.lat = data.location.latitude;
           loc.long = data.location.longitude;
+          $('#google-attribution').addClass("hide");
           $('#geoLoader').addClass("hide");
           $('#geoError').addClass("hide");
           $('#explore-vs-home').removeClass("hide");
@@ -119,8 +121,8 @@ function checkLocation(is_inital_load) {
 function saveLocation(lat, long) {
   console.log('updating location...');
   var data = {
-    lat: lat,
-    long: long
+    lat: Number(lat),
+    long: Number(long)
   };
   var url = getServer()+'/location';
   $.ajax({
@@ -128,10 +130,11 @@ function saveLocation(lat, long) {
     url: url,
     data: data,
     success: function(data) {
-      if(data.status === 200) {
+      if (data.status === 200) {
         console.log('successfully updated location');
       }
       else {
+        console.log(data)
         console.log('issue updating location');
       }
     }
@@ -157,8 +160,12 @@ function findFood() {
       card += '<div class="col s6 m4">';
       card += ' <div class="card teal lighten-4 food-card">';
       card += '   <div class="card-content blue-grey-text text-darken-4">';
-      card += '     <span class="grey-text text-darken-4 smaller-card-font">'+shortenName(data.places[i].name)+'</span>';
-      card += '     <p>'+starify(data.places[i].rating)+'</p>';
+      card += '     <h6><a href="'+data.places[i].link+'" target="_blank" class="grey-text text-darken-4 smaller-card-font">'+shortenName(data.places[i].name)+'</a></h6>';
+      card += '     <p class="details-text">'+data.places[i].distance+' miles away</p>';
+      card += '     <p class="details-text">'+data.places[i].phone+'</p>';
+      card += '     <a href="'+data.places[i].maps_search+'" class="details-text" target="_blank">'+data.places[i].address+'</a>';
+      card += '     <p class="details-text">'+data.places[i].num_rating+' reviews on <img class="embedded-yelp" src="images/yelp/logo.png"/></p>';
+      card += '     <p class="yelp-stars">'+starify(data.places[i].rating)+'</p>';
       card += '   </div>';
       card += '  </div>';
       card += '</div>';
@@ -178,8 +185,12 @@ function orderFood() {
       card += '<div class="col s6 m4">';
       card += ' <div class="card food-card blue lighten-4">';
       card += '   <div class="card-content blue-grey-text text-darken-4">';
-      card += '     <span class="grey-text text-darken-4 smaller-card-font">'+shortenName(data.places[i].name)+'</span>';
-      card += '     <p>'+starify(data.places[i].rating)+'</p>';
+      card += '     <h6><a href="'+data.places[i].link+'" target="_blank" class="grey-text text-darken-4 smaller-card-font">'+shortenName(data.places[i].name)+'</a></h6>';
+      card += '     <p class="details-text">'+data.places[i].distance+' miles away</p>';
+      card += '     <p class="details-text">'+data.places[i].phone+'</p>';
+      card += '     <a href="'+data.places[i].maps_search+'" class="details-text" target="_blank">'+data.places[i].address+'</a>';
+      card += '     <p class="details-text">'+data.places[i].num_rating+' reviews on <img class="embedded-yelp" src="images/yelp/logo.png"/></p>';
+      card += '     <p class="yelp-stars">'+starify(data.places[i].rating)+'</p>';
       card += '   </div>';
       card += '  </div>';
       card += '</div>';
@@ -222,20 +233,25 @@ function backToHomeOptions() {
 
 function starify(rating) {
   var stars = '';
-  if(isNaN(rating)) {
-    return stars;
+  if (isNaN(rating)) {
+    return;
   }
-  for (var i = 0; i < 5; i++) {
-    if (rating >= 1) {
-      stars += '<i class="fa fa-star" aria-hidden="true"></i>';
-    }
-    else if (rating >= .5) {
-      stars += '<i class="fa fa-star-half-o" aria-hidden="true"></i>';
-    }
-    else {
-      stars += '<i class="fa fa-star-o" aria-hidden="true"></i>';
-    }
-    rating--;
+  if (rating < 1) {
+    rating = 0;
+  }
+  var partial = false;
+  if (rating % 1 != 0) {
+    var partial = true;
+    rating = Math.floor(rating);
+  }
+  for (var i = 0; i < 4; i++) {
+    stars += '<img class="yelp-star" src="images/yelp/'+rating+'.png"/>';
+  }
+  if (partial) {
+    stars += '<img class="yelp-star" src="images/yelp/'+rating+'.5.png"/>';
+  }
+  else {
+    stars += '<img class="yelp-star" src="images/yelp/'+rating+'.png"/>';
   }
   return stars;
 }
@@ -258,8 +274,12 @@ function goShopping() {
       card += '<div class="col s6 m4">';
       card += ' <div class="card food-card blue lighten-4">';
       card += '   <div class="card-content blue-grey-text text-darken-4">';
-      card += '     <span class="grey-text text-darken-4 smaller-card-font">'+shortenName(data.places[i].name)+'</span>';
-      card += '     <p>'+starify(data.places[i].rating)+'</p>';
+      card += '     <h6><a href="'+data.places[i].link+'" target="_blank" class="grey-text text-darken-4 smaller-card-font">'+shortenName(data.places[i].name)+'</a></h6>';
+      card += '     <p class="details-text">'+data.places[i].distance+' miles away</p>';
+      card += '     <p class="details-text">'+data.places[i].phone+'</p>';
+      card += '     <a href="'+data.places[i].maps_search+'" class="details-text" target="_blank">'+data.places[i].address+'</a>';
+      card += '     <p class="details-text">'+data.places[i].num_rating+' reviews on <img class="embedded-yelp" src="images/yelp/logo.png"/></p>';
+      card += '     <p class="yelp-stars">'+starify(data.places[i].rating)+'</p>';
       card += '   </div>';
       card += '  </div>';
       card += '</div>';
@@ -287,11 +307,11 @@ function logout() {
     url: url,
     data: null,
     success: function(data) {
-      if(data.status == 200) {
+      if(data.status === 200) {
         var tempUrl = getServer()+'/';
         window.location.replace(tempUrl);
       }
-      else if (data.status == 400) {
+      else if (data.status === 400) {
         console.log("couldn't log out");
       }
       else {

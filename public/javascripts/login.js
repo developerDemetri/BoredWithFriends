@@ -25,11 +25,11 @@ function login() {
       url: url,
       data: data,
       success: function(data) {
-        if(data.status == 200) {
+        if (data.status === 200 && data.message === 'Successful Login') {
           var tempUrl = getServer()+'/';
           window.location.replace(tempUrl);
         }
-        else if (data.status == 400) {
+        else if (data.status === 400 || data.message === 'Invalid Username/Password') {
           $('#loginLoadingCircle').addClass('hide');
           $('#login-button').removeClass('hide');
           $('#login-button-mobile').removeClass('hide');

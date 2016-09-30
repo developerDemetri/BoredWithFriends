@@ -1,4 +1,5 @@
 'use strict';
+
 let app = require('../app');
 let express = require('express');
 let pg_tool = require('../bin/pg_tool');
@@ -8,109 +9,157 @@ let redis_tool = require('../bin/redis_tool');
 let session_tool = require('../bin/session_tool');
 let api_settings = require('../bin/secret_settings').api_settings;
 let request = require('request');
-let validator = require('validator');
-let uname_re = /^(\w{3,63})$/;
+let yelp_tool = require('../bin/yelp_tool');
+let checkInput = require('../bin/validator_tool.js').checkInput;
+let checkCoordinates = require('../bin/validator_tool.js').checkCoordinates;
+const uname_re = /^(\w{3,63})$/;
 
 let router = express.Router();
 
+function metersToMiles(meters) {
+  let miles = 0;
+  if (meters) {
+    miles = (meters*0.000621371).toFixed(2);
+  }
+  return miles;
+}
+
+function mapSearch(location) {
+  let url = 'https://www.google.com/maps/search/';
+  if (location) {
+    url += encodeURIComponent(location);
+  }
+  return url;
+}
+
 router.get('/food/:plan', function(req, res) {
-  if(req.session.uname && uname_re.test(req.session.uname) && req.params.plan && req.session.location && req.session.location.latitude && req.session.location.longitude && validator.isDecimal(req.session.location.latitude) && validator.isDecimal(req.session.location.longitude)) {
-    let req_path = 'https://maps.googleapis.com';
-    req_path += '/maps/api/place/nearbysearch/json?';
-    req_path += 'key='+api_settings.google_key;
-    req_path += '&location='+req.session.location.latitude+','+req.session.location.longitude;
-    if (req.params.plan === 'find') {
-      req_path += '&radius=5000';
-      req_path += '&type=restaurant';
-    }
-    else if (req.params.plan === 'order') {
-      req_path += '&radius=15000';
-      req_path += '&type=meal_delivery';
-    }
-    else {
-      let result = {
-        "status": 400,
-        "message": 'Um...awkward....'
-      };
-      res.send(result);
-    }
-    req_path += '&opennow';
-    request(req_path, function (error, response, body) {
-      if (!error) {
+  let plan_re = /^(\w{3,6})$/;
+  if (checkInput(req.session.uname, 'string', uname_re)) {
+    if (checkInput(req.params.plan, 'string', plan_re) && checkCoordinates(req.session.location)) {
+      let category;
+      let radius;
+      if (req.params.plan === 'find') {
+        category = 'restaurants';
+        radius = 8000;
+      }
+      else if (req.params.plan === 'order') {
+        category = 'fooddeliveryservices';
+        radius = 15000;
+      }
+      else {
+        let result = {
+          "status": 400,
+          "message": 'Invalid Plan'
+        };
+        res.send(result);
+      }
+      yelp_tool.search({
+         location: req.session.location.location,
+         cll: req.session.location.latitude+','+req.session.location.longitude,
+         radius_filter: radius,
+         sort: 2,
+         category_filter: category
+       })
+      .then(function (data) {
         let places = [];
-        let data = JSON.parse(body);
-        for (let i = 0; i < data.results.length; i++) {
-          let place = {
-            id: data.results[i].place_id,
-            name: data.results[i].name,
-            rating: data.results[i].rating
-          };
-          places.push(place);
+        for (let i = 0; places.length < 20 && i < data.businesses.length; i++) {
+          if (!data.businesses[i].is_closed) {
+            let place = {
+              name: data.businesses[i].name,
+              rating: data.businesses[i].rating,
+              num_rating: data.businesses[i].review_count,
+              phone: data.businesses[i].display_phone,
+              address: data.businesses[i].location.display_address,
+              distance: metersToMiles(data.businesses[i].distance),
+              link: data.businesses[i].url,
+              maps_search: mapSearch(data.businesses[i].location.display_address)
+            };
+            places.push(place);
+          }
         }
         let result = {
           "status": 200,
           "places": places
-        }
+        };
         res.send(result);
-      }
-      else {
+      })
+      .catch(function (err) {
         let result = {
           "status": 500,
-          "message": error
-        }
+          "error": 'Server Error'
+        };
         res.send(result);
-      }
-    });
+      });
+    }
+    else {
+      let result = {
+        "status": 400,
+        "message": 'Invalid Location and/or Plan'
+      };
+      res.send(result);
+    }
   }
   else {
     let result = {
       "status": 401,
-      "message": 'no bueno...'
+      "message": 'Unauthorized Request'
     };
     res.send(result);
   }
 });
 
 router.get('/shopping', function(req, res) {
-  if(req.session.uname && uname_re.test(req.session.uname) && req.session.location.latitude && req.session.location.longitude && validator.isDecimal(req.session.location.latitude) && validator.isDecimal(req.session.location.longitude)) {
-    let req_path = 'https://maps.googleapis.com';
-    req_path += '/maps/api/place/nearbysearch/json?';
-    req_path += 'key='+api_settings.google_key;
-    req_path += '&location='+req.session.location.latitude+','+req.session.location.longitude;
-    req_path += '&radius=15000';
-    req_path += '&type=clothing_store';
-    req_path += '&opennow';
-    request(req_path, function (error, response, body) {
-      if (!error) {
+  if (checkInput(req.session.uname, 'string', uname_re)) {
+    if (checkCoordinates(req.session.location)) {
+      yelp_tool.search({
+         location: req.session.location.location,
+         cll: req.session.location.latitude+','+req.session.location.longitude,
+         radius_filter: 15000,
+         sort: 2,
+         category_filter: 'fashion'
+       })
+      .then(function (data) {
         let places = [];
-        let data = JSON.parse(body);
-        for (let i = 0; i < data.results.length; i++) {
-          let place = {
-            id: data.results[i].place_id,
-            name: data.results[i].name,
-            rating: data.results[i].rating
-          };
-          places.push(place);
+        for (let i = 0; places.length < 20 && i < data.businesses.length; i++) {
+          if (!data.businesses[i].is_closed) {
+            let place = {
+              name: data.businesses[i].name,
+              rating: data.businesses[i].rating,
+              num_rating: data.businesses[i].review_count,
+              phone: data.businesses[i].display_phone,
+              address: data.businesses[i].location.display_address,
+              distance: metersToMiles(data.businesses[i].distance),
+              link: data.businesses[i].url
+            };
+            places.push(place);
+          }
         }
         let result = {
           "status": 200,
           "places": places
-        }
+        };
         res.send(result);
-      }
-      else {
+      })
+      .catch(function (err) {
         let result = {
           "status": 500,
-          "message": error
-        }
+          "error": 'error retreiving yelp results'
+        };
         res.send(result);
-      }
-    });
+      });
+    }
+    else {
+      let result = {
+        "status": 400,
+        "message": 'Invalid Location'
+      };
+      res.send(result);
+    }
   }
   else {
     let result = {
       "status": 401,
-      "message": 'no bueno...'
+      "message": 'Unauthorized Request'
     };
     res.send(result);
   }

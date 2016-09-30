@@ -138,8 +138,8 @@ describe('Register and Delete', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 400, 'invalid email');
-        assert.equal(res.body.message, 'Invalid User Details', 'invalid email');
+        assert.equal(res.body.status, 400, 'Invalid Email');
+        assert.equal(res.body.message, 'Invalid User Details', 'Invalid email');
         done();
       });
   });
@@ -154,8 +154,8 @@ describe('Register and Delete', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 400, 'invalid email');
-        assert.equal(res.body.message, 'Invalid User Details', 'invalid email');
+        assert.equal(res.body.status, 400, 'Invalid Password');
+        assert.equal(res.body.message, 'Invalid User Details', 'Invalid Password');
         done();
       });
   });
@@ -171,8 +171,8 @@ describe('Register and Delete', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 201, 'valid user');
-        assert.equal(res.body.message, 'user successfully created', 'valid user');
+        assert.equal(res.body.status, 201, 'Valid User');
+        assert.equal(res.body.message, 'User Successfully Created', 'Valid User');
         cookies = res.headers['set-cookie'].pop().split(';')[0];
         done();
       });
@@ -184,8 +184,8 @@ describe('Register and Delete', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 202, 'user deleted');
-        assert.equal(res.body.message, 'user successfully deleted', 'user deleted');
+        assert.equal(res.body.status, 200, 'User Deleted');
+        assert.equal(res.body.message, 'User Successfully Deleted', 'User Deleted');
         cookies = null;
         done();
       });
@@ -196,8 +196,8 @@ describe('Register and Delete', function() {
       .expect('Content-Type', /json/)
       .end(function(err, res) {
         if (err) done(err);
-        assert.equal(res.body.status, 401, 'user not deleted');
-        assert.equal(res.body.message, 'no bueno...', 'user not deleted');
+        assert.equal(res.body.status, 401, 'User Not Deleted');
+        assert.equal(res.body.message, 'Unauthorized Request', 'User Not Deleted');
         done();
       });
   });
