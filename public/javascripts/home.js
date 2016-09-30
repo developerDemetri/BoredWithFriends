@@ -73,6 +73,7 @@ function updateLocation(is_inital_load) {
       loc.long = position.coords.longitude;
       saveLocation(loc.lat, loc.long);
       if (is_inital_load) {
+        $('#google-attribution').addClass("hide");
         $('#geoLoader').addClass("hide");
         $('#geoError').addClass("hide");
         $('#explore-vs-home').removeClass("hide");
@@ -95,6 +96,7 @@ function checkLocation(is_inital_load) {
         if (data.location) {
           loc.lat = data.location.latitude;
           loc.long = data.location.longitude;
+          $('#google-attribution').addClass("hide");
           $('#geoLoader').addClass("hide");
           $('#geoError').addClass("hide");
           $('#explore-vs-home').removeClass("hide");
@@ -158,8 +160,12 @@ function findFood() {
       card += '<div class="col s6 m4">';
       card += ' <div class="card teal lighten-4 food-card">';
       card += '   <div class="card-content blue-grey-text text-darken-4">';
-      card += '     <span class="grey-text text-darken-4 smaller-card-font">'+shortenName(data.places[i].name)+'</span>';
-      card += '     <p>'+starify(data.places[i].rating)+'</p>';
+      card += '     <h6><a href="'+data.places[i].link+'" target="_blank" class="grey-text text-darken-4 smaller-card-font">'+shortenName(data.places[i].name)+'</a></h6>';
+      card += '     <p class="details-text">'+data.places[i].distance+' miles away</p>';
+      card += '     <p class="details-text">'+data.places[i].phone+'</p>';
+      card += '     <a href="'+data.places[i].maps_search+'" class="details-text" target="_blank">'+data.places[i].address+'</a>';
+      card += '     <p class="details-text">'+data.places[i].num_rating+' reviews on <img class="embedded-yelp" src="images/yelp/logo.png"/></p>';
+      card += '     <p class="yelp-stars">'+starify(data.places[i].rating)+'</p>';
       card += '   </div>';
       card += '  </div>';
       card += '</div>';
@@ -179,8 +185,12 @@ function orderFood() {
       card += '<div class="col s6 m4">';
       card += ' <div class="card food-card blue lighten-4">';
       card += '   <div class="card-content blue-grey-text text-darken-4">';
-      card += '     <span class="grey-text text-darken-4 smaller-card-font">'+shortenName(data.places[i].name)+'</span>';
-      card += '     <p>'+starify(data.places[i].rating)+'</p>';
+      card += '     <h6><a href="'+data.places[i].link+'" target="_blank" class="grey-text text-darken-4 smaller-card-font">'+shortenName(data.places[i].name)+'</a></h6>';
+      card += '     <p class="details-text">'+data.places[i].distance+' miles away</p>';
+      card += '     <p class="details-text">'+data.places[i].phone+'</p>';
+      card += '     <a href="'+data.places[i].maps_search+'" class="details-text" target="_blank">'+data.places[i].address+'</a>';
+      card += '     <p class="details-text">'+data.places[i].num_rating+' reviews on <img class="embedded-yelp" src="images/yelp/logo.png"/></p>';
+      card += '     <p class="yelp-stars">'+starify(data.places[i].rating)+'</p>';
       card += '   </div>';
       card += '  </div>';
       card += '</div>';
@@ -264,8 +274,12 @@ function goShopping() {
       card += '<div class="col s6 m4">';
       card += ' <div class="card food-card blue lighten-4">';
       card += '   <div class="card-content blue-grey-text text-darken-4">';
-      card += '     <span class="grey-text text-darken-4 smaller-card-font">'+shortenName(data.places[i].name)+'</span>';
-      card += '     <p>'+starify(data.places[i].rating)+'</p>';
+      card += '     <h6><a href="'+data.places[i].link+'" target="_blank" class="grey-text text-darken-4 smaller-card-font">'+shortenName(data.places[i].name)+'</a></h6>';
+      card += '     <p class="details-text">'+data.places[i].distance+' miles away</p>';
+      card += '     <p class="details-text">'+data.places[i].phone+'</p>';
+      card += '     <a href="'+data.places[i].maps_search+'" class="details-text" target="_blank">'+data.places[i].address+'</a>';
+      card += '     <p class="details-text">'+data.places[i].num_rating+' reviews on <img class="embedded-yelp" src="images/yelp/logo.png"/></p>';
+      card += '     <p class="yelp-stars">'+starify(data.places[i].rating)+'</p>';
       card += '   </div>';
       card += '  </div>';
       card += '</div>';

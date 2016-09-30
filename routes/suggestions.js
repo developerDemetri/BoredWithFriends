@@ -16,6 +16,22 @@ const uname_re = /^(\w{3,63})$/;
 
 let router = express.Router();
 
+function metersToMiles(meters) {
+  let miles = 0;
+  if (meters) {
+    miles = (meters*0.000621371).toFixed(2);
+  }
+  return miles;
+}
+
+function mapSearch(location) {
+  let url = 'https://www.google.com/maps/search/';
+  if (location) {
+    url += encodeURIComponent(location);
+  }
+  return url;
+}
+
 router.get('/food/:plan', function(req, res) {
   let plan_re = /^(\w{3,6})$/;
   if (checkInput(req.session.uname, 'string', uname_re)) {
@@ -51,9 +67,12 @@ router.get('/food/:plan', function(req, res) {
             let place = {
               name: data.businesses[i].name,
               rating: data.businesses[i].rating,
+              num_rating: data.businesses[i].review_count,
               phone: data.businesses[i].display_phone,
               address: data.businesses[i].location.display_address,
-              distance: data.businesses[i].distance
+              distance: metersToMiles(data.businesses[i].distance),
+              link: data.businesses[i].url,
+              maps_search: mapSearch(data.businesses[i].location.display_address)
             };
             places.push(place);
           }
@@ -106,9 +125,11 @@ router.get('/shopping', function(req, res) {
             let place = {
               name: data.businesses[i].name,
               rating: data.businesses[i].rating,
+              num_rating: data.businesses[i].review_count,
               phone: data.businesses[i].display_phone,
               address: data.businesses[i].location.display_address,
-              distance: data.businesses[i].distance
+              distance: metersToMiles(data.businesses[i].distance),
+              link: data.businesses[i].url
             };
             places.push(place);
           }

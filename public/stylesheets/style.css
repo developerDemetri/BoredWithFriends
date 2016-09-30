@@ -70,15 +70,27 @@ footer.page-footer {
 }
 
 .food-card {
-  height: 12rem;
+  height: 13rem;
 }
 
-.google-attribution {
+.attribution {
   height: 3rem;
 }
 
+.embedded-yelp {
+  height: 1.1rem !important;
+}
+
 .yelp-star {
-  height: 1.5rem;
+  height: 1.25rem;
+}
+
+.yelp-stars {
+  margin-top: .15rem !important;
+}
+
+.details-text {
+  font-size: 0.6rem;
 }
 
 /*
