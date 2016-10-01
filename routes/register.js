@@ -8,9 +8,10 @@ let aes_tool = require('../bin/aes_tool');
 let redis_tool = require('../bin/redis_tool');
 let session_tool = require('../bin/session_tool');
 let checkInput = require('../bin/validator_tool.js').checkInput;
+let captcha_key = require('../bin/secret_settings').api_settings.captcha_key;
+let request = require('request');
 const uname_re = /^(\w{3,63})$/;
 const email_re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
 
 let router = express.Router();
 
@@ -26,27 +27,59 @@ router.get('/', function(req, res) {
 router.post('/submit', function(req, res) {
   let pass_re = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9!@#$%^&*/._+-]{8,31})$/;
   if (checkInput(req.body.username, 'string', uname_re) && checkInput(req.body.email, 'string', email_re) && checkInput(req.body.password, 'string', pass_re)) {
-    let username = req.body.username + '';
-    username = username.toLowerCase();
-    let email = req.body.email + '';
-    email = aes_tool.encrypt(email.toLowerCase());
-    let password = req.body.password + '';
-    password = bcrypt.hashSync(password, 10);
-    pg_tool.query('INSERT INTO public.bwf_user (username, email, password) VALUES ($1, $2, $3)', [username,email,password], function(error, rows) {
-      if (error) {
+    let captchaData = {
+      secret: captcha_key,
+      response: req.body["g-recaptcha-response"],
+      remoteip: req.connection.remoteAddress
+    };
+    let captcha_url = 'https://www.google.com/recaptcha/api/siteverify';
+    request.post({
+      url: captcha_url,
+      form: captchaData
+    },
+    function(err, httpResponse, captcha_body) {
+      if (err) {
+        console.log('captcha error', err);
         let result = {
           "status": 500,
-          "error": 'Server Error'
+          "message": 'Server Error'
         };
         res.send(result);
       }
       else {
-        req.session.uname = username;
-        let result = {
-          "status": 201,
-          "message": 'User Successfully Created'
-        };
-        res.send(result);
+        captcha_body = JSON.parse(captcha_body);
+        if (captcha_body.success === true) {
+          let username = req.body.username + '';
+          username = username.toLowerCase();
+          let email = req.body.email + '';
+          email = aes_tool.encrypt(email.toLowerCase());
+          let password = req.body.password + '';
+          password = bcrypt.hashSync(password, 10);
+          pg_tool.query('INSERT INTO public.bwf_user (username, email, password) VALUES ($1, $2, $3)', [username,email,password], function(error, rows) {
+            if (error) {
+              let result = {
+                "status": 500,
+                "error": 'Server Error'
+              };
+              res.send(result);
+            }
+            else {
+              req.session.uname = username;
+              let result = {
+                "status": 201,
+                "message": 'User Successfully Created'
+              };
+              res.send(result);
+            }
+          });
+        }
+        else {
+          let result = {
+            "status": 403,
+            "message": 'Invalid Captcha'
+          };
+          res.send(result);
+        }
       }
     });
   }

@@ -28,6 +28,8 @@ let yelp_token_secret;
 let yelp_consumer_key;
 let yelp_consumer_secret;
 
+let captcha_key;
+
 
 if (process.env.im_live) {
   console.log('loading prod settings..');
@@ -52,6 +54,7 @@ if (process.env.im_live) {
   yelp_token_secret = process.env.yelp_token_secret;
   yelp_consumer_key = process.env.yelp_consumer_key;
   yelp_consumer_secret = process.env.yelp_consumer_secret;
+  captcha_key = process.env.captcha_secret;
 }
 else {
   console.log('loading local settings..');
@@ -77,6 +80,7 @@ else {
   yelp_token_secret = local_settings.yelp_token_secret;
   yelp_consumer_key = local_settings.yelp_consumer_key;
   yelp_consumer_secret = local_settings.yelp_consumer_secret;
+  captcha_key = local_settings.captcha_secret;
 }
 
 let db_config = {
@@ -106,7 +110,8 @@ let api_settings = {
     token_secret: yelp_token_secret,
     consumer_key: yelp_consumer_key,
     consumer_secret: yelp_consumer_secret
-  }
+  },
+  captcha_key: captcha_key
 };
 
 let redis_config = {
