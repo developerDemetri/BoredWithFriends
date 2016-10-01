@@ -14,10 +14,12 @@ function register() {
         checkemail(function(emailIsValid) {
           if (emailIsValid) {
             if (checkPassStrength() && checkPassMatch()) {
+              var captch_resp = $('#g-recaptcha-response').val();
               user = {
                 'username': username,
                 'email': email,
-                'password': password1
+                'password': password1,
+                'g-recaptcha-response': captch_resp
               };
               loadModal();
             }
@@ -66,6 +68,9 @@ function insertUser() {
         window.location.replace(homeUrl);
       }
       else {
+        if (data.status === 403) {
+          $('#bad-captcha').removeClass('hide');
+        }
         $('#registerLoadingCircle').addClass('hide');
         $('#registerBtn').removeClass('hide');
       }

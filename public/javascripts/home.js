@@ -244,14 +244,19 @@ function starify(rating) {
     var partial = true;
     rating = Math.floor(rating);
   }
-  for (var i = 0; i < 4; i++) {
-    stars += '<img class="yelp-star" src="images/yelp/'+rating+'.png"/>';
-  }
-  if (partial) {
-    stars += '<img class="yelp-star" src="images/yelp/'+rating+'.5.png"/>';
-  }
-  else {
-    stars += '<img class="yelp-star" src="images/yelp/'+rating+'.png"/>';
+  var num_stars = 0;
+  for (var i = 0; i < 5; i++) {
+    if (rating > num_stars) {
+      stars += '<img class="yelp-star" src="images/yelp/'+rating+'.png"/>';
+      num_stars++;
+    }
+    else if (partial) {
+      stars += '<img class="yelp-star" src="images/yelp/'+rating+'.5.png"/>';
+      partial = false;
+    }
+    else {
+      stars += '<img class="yelp-star" src="images/yelp/0.png"/>';
+    }
   }
   return stars;
 }
