@@ -6,7 +6,7 @@ function getServer() {
 
 
 /*
-Copyright 2016 DeveloperDemetri
+Copyright 2016-2017 DeveloperDemetri
 developerdemetri.com
 
 Licensed under the Apache License, Version 2.0 (the "License");

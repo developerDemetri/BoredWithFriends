@@ -48,7 +48,7 @@ pg_tool.query = function(querystring, params, callback) {
 module.exports = pg_tool;
 
 /*
-Copyright 2016 DeveloperDemetri
+Copyright 2016-2017 DeveloperDemetri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

@@ -6,7 +6,8 @@ let redis_config = require('./secret_settings').redis_config;
 let redis_tool = new Redis({
   port: redis_config.port,
   host: redis_config.host,
-  password: redis_config.password
+  password: redis_config.password,
+  db: redis_config.db
 });
 
 redis_tool.on('connect', function () {

@@ -18,6 +18,7 @@ let google_key;
 let redis_port;
 let redis_host;
 let redis_password;
+let redis_db;
 
 let test_user;
 let test_pass;
@@ -46,9 +47,10 @@ if (process.env.im_live) {
   pg_ssl = true;
   google_key = process.env.google_key;
   let redis_url = process.env.REDIS_URL.split(':');
-  redis_port = redis_url[3];
+  redis_port = redis_url[3].split('/')[0];
   redis_host = redis_url[2].split('@')[1];
   redis_password = redis_url[2].split('@')[0];
+  redis_db = redis_url[3].split('/')[1];
   test_user = process.env.test_user;
   test_pass = process.env.test_pass;
   test_email = process.env.test_email;
@@ -75,6 +77,7 @@ else {
   redis_port = local_settings.redis_port;
   redis_host = local_settings.redis_host;
   redis_password = local_settings.redis_password;
+  redis_db = local_settings.redis_db;
   test_user = local_settings.test_user;
   test_pass = local_settings.test_pass;
   test_email = local_settings.test_email;
@@ -85,7 +88,7 @@ else {
   captcha_key = local_settings.captcha_secret;
 }
 
-let db_config = {
+const db_config = {
   user: pg_user,
   database: pg_db,
   password: pg_pass,
@@ -95,7 +98,7 @@ let db_config = {
   idleTimeoutMillis: 30000,
 };
 
-let aes_config = {
+const aes_config = {
   algorithm: aes_alg,
   password: aes_pass
 };
@@ -119,7 +122,8 @@ let api_settings = {
 let redis_config = {
   port: redis_port,
   host: redis_host,
-  password: redis_password
+  password: redis_password,
+  db: redis_db
 };
 
 let testing_config = {
