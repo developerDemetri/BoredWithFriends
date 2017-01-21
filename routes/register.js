@@ -3,7 +3,7 @@
 let app = require('../app');
 let express = require('express');
 let pg_tool = require('../bin/pg_tool');
-let bcrypt = require('bcrypt');
+let bcrypt = require('bcrypt-nodejs');
 let aes_tool = require('../bin/aes_tool');
 let redis_tool = require('../bin/redis_tool');
 let session_tool = require('../bin/session_tool');
@@ -54,7 +54,7 @@ router.post('/submit', function(req, res) {
           let email = req.body.email + '';
           email = aes_tool.encrypt(email.toLowerCase());
           let password = req.body.password + '';
-          password = bcrypt.hashSync(password, 10);
+          password = bcrypt.hashSync(password);
           pg_tool.query('INSERT INTO public.bwf_user (username, email, password) VALUES ($1, $2, $3)', [username,email,password], function(error, rows) {
             if (error) {
               let result = {

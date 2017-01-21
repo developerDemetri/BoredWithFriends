@@ -2,9 +2,6 @@
 
 let app = require('../app');
 let express = require('express');
-let pg_tool = require('../bin/pg_tool');
-let bcrypt = require('bcrypt');
-let aes_tool = require('../bin/aes_tool');
 let redis_tool = require('../bin/redis_tool');
 let session_tool = require('../bin/session_tool');
 const api_settings = require('../bin/secret_settings').api_settings;
