@@ -1,30 +1,36 @@
 #!/usr/bin/env node
 'use strict';
-/**
- * Module dependencies.
- */
 
 let app = require('../app');
-let http = require('http');
+let https = require('https');
+let fs = require('fs');
+
+const SECRET_SETTINGS = require('./secret_settings').server_config;
+
+const PORT = normalizePort(SECRET_SETTINGS.PORT);
+const KEY = fs.readFileSync(SECRET_SETTINGS.KEY_PATH);
+const CERT = fs.readFileSync(SECRET_SETTINGS.CERTIFICATE_PATH);
+const CA = fs.readFileSync(SECRET_SETTINGS.CA_PATH);
+
+const HTTPS_OPTIONS = {
+    key: KEY,
+    cert: CERT,
+    ca: CA
+};
+
+app.set('port', PORT);
 
 /**
- * Get port from environment and store in Express.
+ * Create HTTPS server.
  */
 
-let port = normalizePort(process.env.PORT || '3000');
-app.set('port', port);
-
-/**
- * Create HTTP server.
- */
-
-let server = http.createServer(app);
+let server = https.createServer(HTTPS_OPTIONS, app);
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(PORT);
 server.on('error', onError);
 server.on('listening', onListening);
 
@@ -34,17 +40,14 @@ server.on('listening', onListening);
 
 function normalizePort(val) {
   let port = parseInt(val, 10);
-
   if (isNaN(port)) {
     // named pipe
     return val;
   }
-
   if (port >= 0) {
     // port number
     return port;
   }
-
   return false;
 }
 
@@ -56,11 +59,9 @@ function onError(error) {
   if (error.syscall !== 'listen') {
     throw error;
   }
-
   let bind = typeof port === 'string'
     ? 'Pipe ' + port
     : 'Port ' + port;
-
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
@@ -85,4 +86,5 @@ function onListening() {
   let bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
+  console.log('BWF server listening to port: ', PORT);
 }

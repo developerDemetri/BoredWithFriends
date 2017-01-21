@@ -1,6 +1,6 @@
 'use strict';
 
-let aes_config = require('./secret_settings').aes_config;
+const aes_config = require('./secret_settings').aes_config;
 
 let crypto = require('crypto');
 const algorithm = aes_config.algorithm;

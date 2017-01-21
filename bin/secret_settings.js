@@ -1,92 +1,36 @@
 'use strict';
 
-let pg_user;
-let pg_db;
-let pg_pass;
-let pg_host;
-let pg_port;
-let pg_ssl;
+console.log('loading settings..');
 
-let aes_alg;
-let aes_pass;
+const local_settings = require('./local_settings');
 
-let sesh_name;
-let sesh_secret;
-
-let google_key;
-
-let redis_port;
-let redis_host;
-let redis_password;
-let redis_db;
-
-let test_user;
-let test_pass;
-let test_email;
-
-let yelp_token;
-let yelp_token_secret;
-let yelp_consumer_key;
-let yelp_consumer_secret;
-
-let captcha_key;
-
-
-if (process.env.im_live) {
-  console.log('loading prod settings..');
-  let pg_url = process.env.DATABASE_URL.split(':');
-  pg_user = pg_url[1].substring(2);
-  pg_db = pg_url[3].split('/')[1];
-  pg_pass = pg_url[2].split('@')[0];
-  pg_host = pg_url[2].split('@')[1];
-  pg_port = pg_url[3].split('/')[0];
-  aes_alg = process.env.aes_alg;
-  aes_pass = process.env.aes_pass;
-  sesh_name = process.env.sesh_name;
-  sesh_secret = process.env.sesh_secret;
-  pg_ssl = true;
-  google_key = process.env.google_key;
-  let redis_url = process.env.REDIS_URL.split(':');
-  redis_port = redis_url[3].split('/')[0];
-  redis_host = redis_url[2].split('@')[1];
-  redis_password = redis_url[2].split('@')[0];
-  redis_db = redis_url[3].split('/')[1];
-  test_user = process.env.test_user;
-  test_pass = process.env.test_pass;
-  test_email = process.env.test_email;
-  yelp_token = process.env.yelp_token;
-  yelp_token_secret = process.env.yelp_token_secret;
-  yelp_consumer_key = process.env.yelp_consumer_key;
-  yelp_consumer_secret = process.env.yelp_consumer_secret;
-  captcha_key = process.env.captcha_secret;
-}
-else {
-  console.log('loading local settings..');
-  let local_settings = require('./local_settings');
-  pg_user = local_settings.pg_user;
-  pg_db = local_settings.pg_db;
-  pg_pass = local_settings.pg_pass;
-  pg_host = local_settings.pg_host;
-  pg_port = local_settings.pg_port;
-  aes_alg = local_settings.aes_alg;
-  aes_pass = local_settings.aes_pass;
-  sesh_name = local_settings.sesh_name;
-  sesh_secret = local_settings.sesh_secret;
-  pg_ssl = false;
-  google_key = local_settings.google_key;
-  redis_port = local_settings.redis_port;
-  redis_host = local_settings.redis_host;
-  redis_password = local_settings.redis_password;
-  redis_db = local_settings.redis_db;
-  test_user = local_settings.test_user;
-  test_pass = local_settings.test_pass;
-  test_email = local_settings.test_email;
-  yelp_token = local_settings.yelp_token;
-  yelp_token_secret = local_settings.yelp_token_secret;
-  yelp_consumer_key = local_settings.yelp_consumer_key;
-  yelp_consumer_secret = local_settings.yelp_consumer_secret;
-  captcha_key = local_settings.captcha_secret;
-}
+const pg_user = local_settings.pg_user;
+const pg_db = local_settings.pg_db;
+const pg_pass = local_settings.pg_pass;
+const pg_host = local_settings.pg_host;
+const pg_port = local_settings.pg_port;
+const aes_alg = local_settings.aes_alg;
+const aes_pass = local_settings.aes_pass;
+const sesh_name = local_settings.sesh_name;
+const sesh_secret = local_settings.sesh_secret;
+const pg_ssl = local_settings.pg_ssl;
+const google_key = local_settings.google_key;
+const redis_port = local_settings.redis_port;
+const redis_host = local_settings.redis_host;
+const redis_password = local_settings.redis_password;
+const redis_db = local_settings.redis_db;
+const test_user = local_settings.test_user;
+const test_pass = local_settings.test_pass;
+const test_email = local_settings.test_email;
+const yelp_token = local_settings.yelp_token;
+const yelp_token_secret = local_settings.yelp_token_secret;
+const yelp_consumer_key = local_settings.yelp_consumer_key;
+const yelp_consumer_secret = local_settings.yelp_consumer_secret;
+const captcha_key = local_settings.captcha_secret;
+const port = local_settings.port;
+const key_path = local_settings.key_path;
+const certificate_path = local_settings.certificate_path;
+const ca_path = local_settings.ca_path;
 
 const db_config = {
   user: pg_user,
@@ -103,12 +47,12 @@ const aes_config = {
   password: aes_pass
 };
 
-let session_config = {
+const session_config = {
   sesh_name: sesh_name,
   sesh_secret: sesh_secret
 };
 
-let api_settings = {
+const api_settings = {
   google_key: google_key,
   yelp_config: {
     token: yelp_token,
@@ -119,33 +63,41 @@ let api_settings = {
   captcha_key: captcha_key
 };
 
-let redis_config = {
+const redis_config = {
   port: redis_port,
   host: redis_host,
   password: redis_password,
   db: redis_db
 };
 
-let testing_config = {
+const testing_config = {
   user: test_user,
   pass: test_pass,
   email: test_email
 };
 
-let secret_settings = {
+const server_config = {
+  PORT: port,
+  KEY_PATH: key_path,
+  CERTIFICATE_PATH: certificate_path,
+  CA_PATH: ca_path
+};
+
+const secret_settings = {
   db_config: db_config,
   aes_config: aes_config,
   session_config: session_config,
   pg_ssl: pg_ssl,
   api_settings: api_settings,
   redis_config: redis_config,
-  testing_config: testing_config
+  testing_config: testing_config,
+  server_config: server_config
 };
 
 module.exports = secret_settings;
 
 /*
-Copyright 2016 DeveloperDemetri
+Copyright 2016-2017 DeveloperDemetri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

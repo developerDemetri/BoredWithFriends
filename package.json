@@ -15,6 +15,7 @@
     "ejs": "^2.4.2",
     "express": "~4.13.4",
     "express-session": "^1.14.0",
+    "fs": "0.0.1-security",
     "ioredis": "^2.3.0",
     "morgan": "~1.7.0",
     "node-uuid": "^1.4.7",

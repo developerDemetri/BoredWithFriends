@@ -1,7 +1,8 @@
 'use strict';
 
 let yelp = require('yelp');
-let yelp_cofig = require('./secret_settings').api_settings.yelp_config;
+
+const yelp_cofig = require('./secret_settings').api_settings.yelp_config;
 
 let yelp_tool = new yelp(yelp_cofig);
 

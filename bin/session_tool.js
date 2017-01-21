@@ -4,13 +4,13 @@ let uuid = require('node-uuid');
 let session = require('express-session');
 let redis_tool = require('./redis_tool');
 let RedisStore = require('connect-redis')(session);
-let session_config = require('./secret_settings').session_config;
+const session_config = require('./secret_settings').session_config;
 
-let options = {
+const options = {
   client: redis_tool
 };
 
-let session_settings = {
+const session_settings = {
   name: session_config.sesh_name,
   store: new RedisStore(options),
   genid: function(req) {
